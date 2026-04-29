@@ -1,0 +1,122 @@
+.home-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 28px 18px;
+}
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  transform: translateY(-6vh);
+}
+
+.home-logo-wrap {
+  animation: logoFloat 4.2s ease-in-out infinite;
+}
+
+.home-logo-wrap img {
+  width: clamp(260px, 31vw, 420px);
+  height: auto;
+  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.38)) drop-shadow(0 16px 28px rgba(0, 0, 0, 0.25));
+}
+
+.home-tagline {
+  margin-top: 12px;
+  margin-bottom: clamp(54px, 8vh, 78px);
+}
+
+.home-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.play-cta,
+.mode-cta {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.play-cta:hover,
+.mode-cta:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
+.play-cta:active,
+.mode-cta:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.play-shell {
+  display: block;
+  position: relative;
+  width: clamp(100px, 20vw, 240px);
+  max-width: 100%;
+}
+
+.play-progress {
+  position: absolute;
+  top: 19%;
+  left: 49%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(8, clamp(11px, 2.5vw, 27px));
+  gap: 0;
+  pointer-events: none;
+}
+
+.play-progress img {
+  width: clamp(11px, 2.5vw, 27px);
+  height: auto;
+  display: block;
+}
+
+.mode-shell {
+  width: clamp(45px, 12vw, 105px);
+  max-width: 100%;
+  display: block;
+}
+
+.mode-reset {
+  position: absolute;
+  top: 6%;
+  right: 20%;
+  font-size: clamp(0.4rem, 2vw, 0.9rem);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
+  line-height: 1;
+  max-width: clamp(52px, 15vw, 120px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mode-new {
+  position: absolute;
+  top: 10%;
+  right: -20%;
+  width: clamp(18px, 5vw, 42px);
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .home-content {
+    transform: translateY(-2vh);
+  }
+
+  .home-tagline {
+    margin-bottom: 36px;
+    text-align: center;
+    max-width: 290px;
+  }
+
+  .home-actions {
+    gap: 8px;
+  }
+}

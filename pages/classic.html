@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brawldle — Classic</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <link rel="stylesheet" href="../css/home.css" />
+  <link rel="stylesheet" href="../css/classic.css" />
+</head>
+<body class="bg-stars">
+
+<main class="classic-page">
+  <section class="classic-hero">
+    <a href="../index.html" class="classic-logo-link" title="Accueil">
+      <img src="../assets/design/logo_brawldle-stars.png" alt="Brawldle Stars" class="classic-logo" />
+    </a>
+    <h1 class="classic-title title">Guess today's brawler</h1>
+  </section>
+
+  <section class="clues-row" aria-label="Indices disponibles">
+    <button class="clue-card is-locked" id="descClueBtn" type="button" aria-expanded="false">
+      <span class="clue-lock-badge">
+        <img src="../assets/design/icon-clue_lock.png" alt="Cadenas" />
+        <span id="descClueTries">5</span>
+      </span>
+      <img class="clue-main-icon" id="descClueIcon" src="../assets/design/icon-clue_desc_lock.png" alt="Indice description" />
+      <span class="clue-bubble" id="descClueBubble" aria-hidden="true">
+        <img src="../assets/design/icon-clue_bubble_2.png" alt="" class="clue-bubble-bg" />
+        <span class="clue-bubble-content">
+          <p class="description" id="cluePopupTextDesc"></p>
+        </span>
+      </span>
+      <span class="clue-name subtitle">Description clue</span>
+      <span class="clue-status subtitle" id="descClueStatus">in 5 tries</span>
+    </button>
+
+    <button class="clue-card is-locked" id="hyperClueBtn" type="button" aria-expanded="false">
+      <span class="clue-lock-badge">
+        <img src="../assets/design/icon-clue_lock.png" alt="Cadenas" />
+        <span id="hyperClueTries">5</span>
+      </span>
+      <img class="clue-main-icon" id="hyperClueIcon" src="../assets/design/icon-clue_hypercharge_lock.png" alt="Indice hypercharge" />
+      <span class="clue-bubble" id="hyperClueBubble" aria-hidden="true">
+        <img src="../assets/design/icon-clue_bubble_2.png" alt="" class="clue-bubble-bg" />
+        <span class="clue-bubble-content">
+          <img class="hypercharge-image" id="cluePopupHyperImage" alt="Hypercharge du brawler" />
+        </span>
+      </span>
+      <span class="clue-name subtitle">Hypercharge clue</span>
+      <span class="clue-status subtitle" id="hyperClueStatus">in 5 tries</span>
+    </button>
+  </section>
+
+  <section class="search-zone">
+    <div class="search-wrap">
+      <input
+        type="text"
+        class="search-input"
+        id="searchInput"
+        placeholder="Guess the brawler"
+        autocomplete="off"
+      />
+      <button class="chat-btn" type="button" aria-label="Valider la reponse">
+        <img src="../assets/design/icon-chat.png" alt="Chat" />
+      </button>
+      <div class="dropdown" id="dropdown"></div>
+    </div>
+  </section>
+
+  <div class="error-banner" id="errorBanner">
+    <div class="error-banner-inner" id="errorMsg"></div>
+  </div>
+
+  <section class="table-container">
+    <div class="table-header">
+      <div class="col-label subtitle">Brawler</div>
+      <div class="col-label subtitle">Genre</div>
+      <div class="col-label subtitle">Rarity</div>
+      <div class="col-label subtitle">Role</div>
+      <div class="col-label subtitle">Range</div>
+      <div class="col-label subtitle">Movement</div>
+      <div class="col-label subtitle">Release</div>
+    </div>
+
+    <div class="guesses-list" id="guessesList">
+      <div class="empty-state">
+        <p>Start by searching a brawler.</p>
+      </div>
+  </section>
+</main>
+
+<section class="won-section" id="wonSection" aria-label="Victoire">
+  <div class="won-container">
+    <div class="won-brawler-icon">
+      <img id="wonBrawlerIcon" src="" alt="Brawler" />
+    </div>
+    <h2 class="won-title title">Won</h2>
+    <p class="won-score description" id="wonScore">Score: 0</p>
+    
+    <div class="home-actions" aria-label="Actions principales">
+      <a href="classic.html" class="play-cta" aria-label="Lancer une partie classique">
+        <img class="play-shell" src="../assets/design/play-button.png" alt="" aria-hidden="true" />
+        <div class="play-progress" aria-hidden="true">
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+          <img src="../assets/design/progress-bar-segment-false.png" alt="" />
+        </div>
+      </a>
+
+      <a href="gamemode.html" class="mode-cta" aria-label="Choisir le mode de jeu">
+        <img class="mode-shell" src="../assets/design/mode-button.png" alt="" aria-hidden="true" />
+        <span class="mode-reset text-reset">00h 00m</span>
+        <img class="mode-new" src="../assets/design/new-flag.png" alt="Nouveau" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<script src="../js/classic.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+@font-face {
+  font-family: 'Lilita One';
+  src: url('../fonts/LilitaOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg:          #0d0f1a;
+  --surface:     #161927;
+  --surface2:    #1e2235;
+  --border:      #2a2f4a;
+  --accent:      #f7c948;
+  --accent2:     #ff6b35;
+  --blue:        #2373ff;
+  --green:       #22c55e;
+  --red:         #ef4444;
+  --text:        #e8eaf6;
+  --text-muted:  #7c85b3;
+  --radius:      14px;
+  --radius-sm:   8px;
+
+  --font-title:  'Lilita One', cursive;
+  --font-body:   'Nunito', sans-serif;
+
+  --title-color: #ffffff;
+  --title-stroke: #000000;
+  --reset-color: #7583a4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.bg-stars {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(74, 158, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(168, 85, 247, 0.10) 0%, transparent 60%),
+    url('../assets/design/background.png');
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: cover, cover, cover;
+  background-attachment: fixed, fixed, fixed;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+h1,
+.title {
+  letter-spacing: 0.5px;
+  font-family: var(--font-title);
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--title-color);
+  line-height: 1.1;
+  /* Text shadow for a 3px stroke effect. */
+  text-shadow:
+    -3px 0 0 var(--title-stroke),
+    3px 0 0 var(--title-stroke),
+    0 -3px 0 var(--title-stroke),
+    0 3px 0 var(--title-stroke),
+    -2px -2px 0 var(--title-stroke),
+    2px -2px 0 var(--title-stroke),
+    -2px 2px 0 var(--title-stroke),
+    2px 2px 0 var(--title-stroke),
+    -3px -1px 0 var(--title-stroke),
+    -3px 1px 0 var(--title-stroke),
+    3px -1px 0 var(--title-stroke),
+    3px 1px 0 var(--title-stroke),
+    -1px -3px 0 var(--title-stroke),
+    1px -3px 0 var(--title-stroke),
+    -1px 3px 0 var(--title-stroke),
+    1px 3px 0 var(--title-stroke);
+}
+
+h2,
+.subtitle {
+  font-family: var(--font-title);
+  font-size: 20px;
+  color: var(--title-color);
+  line-height: 1.2;
+  /* Text shadow for 1px stroke + drop shadow. */
+  text-shadow:
+    -1px 0 0 var(--title-stroke),
+    1px 0 0 var(--title-stroke),
+    0 -1px 0 var(--title-stroke),
+    0 1px 0 var(--title-stroke),
+    -1px -1px 0 var(--title-stroke),
+    1px -1px 0 var(--title-stroke),
+    -1px 1px 0 var(--title-stroke),
+    1px 1px 0 var(--title-stroke),
+    0 2px 0 rgba(0, 0, 0, 0.8);
+}
+
+.description {
+  font-family: var(--font-title);
+  font-size: 11px;
+  color: var(--title-color);
+  line-height: 1.35;
+}
+
+.text-reset,
+.reset-text,
+.search-input {
+  font-family: var(--font-title);
+  color: var(--reset-color);
+}
+
+@keyframes logoFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}

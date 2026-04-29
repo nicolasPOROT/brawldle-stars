@@ -1,0 +1,720 @@
+.classic-page {
+  min-height: 100vh;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 16px 46px;
+  position: relative;
+}
+
+.classic-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  margin-top: -4px;
+}
+
+.classic-logo-link {
+  text-decoration: none;
+  animation: logoFloat 4s ease-in-out infinite;
+}
+
+.classic-logo {
+  width: clamp(220px, 28vw, 360px);
+  height: auto;
+  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.38)) drop-shadow(0 16px 28px rgba(0, 0, 0, 0.25));
+}
+
+.classic-title {
+  margin: 0;
+}
+
+.clues-row {
+  margin: 20px auto 20px;
+  width: min(100%, 520px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.clue-card {
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  overflow: visible;
+  width: 100%;
+}
+
+.clue-card:hover {
+  transform: translateY(-2px);
+}
+
+.clue-card:disabled {
+  cursor: default;
+}
+
+.clue-main-icon {
+  width: 108px;
+  height: 86px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.clue-bubble {
+  display: none;
+  width: min(100%, 250px);
+  position: relative;
+  margin-top: -2px;
+}
+
+.clue-bubble-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.clue-bubble-content {
+  position: absolute;
+  inset: 18% 14% 18% 14%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.clue-bubble-content p {
+  font-family: var(--font-title);
+  font-size: clamp(0.72rem, 2.8vw, 1rem);
+  line-height: 1.15;
+  letter-spacing: 0.35px;
+  max-width: 100%;
+  font-weight: 800;
+  color: #7583a4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.hypercharge-image {
+  display: block;
+  max-width: min(110px, 45vw);
+  max-height: min(92px, 18vw);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.release-year-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.release-arrow {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.release-arrow.is-down {
+  transform: rotate(180deg);
+}
+
+.clue-name {
+  line-height: 1;
+  margin-top: 0;
+}
+
+.clue-name.subtitle {
+  font-size: 20px;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.clue-status {
+  line-height: 1;
+  margin-top: 4px;
+}
+
+.clue-lock-badge {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+.clue-lock-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.clue-lock-badge span {
+  position: absolute;
+  top: 40%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+  font-family: var(--font-title);
+}
+
+#descClueTries,
+#hyperClueTries {
+  font-family: var(--font-title);
+  letter-spacing: 0.2px;
+}
+
+.clue-card.unlocked .clue-lock-badge {
+  opacity: 0;
+}
+
+.clue-card.showing-clue .clue-lock-badge,
+.clue-card.showing-clue .clue-main-icon,
+.clue-card.showing-clue .clue-status {
+  display: none;
+}
+
+.clue-card.showing-clue .clue-bubble {
+  display: block;
+}
+
+.search-zone {
+  max-width: 710px;
+  margin: 4px auto 10px;
+}
+
+.search-wrap {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  border: 3px solid #000;
+  background: #0a0a12;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 13px 74px 13px 18px;
+  font-size: 1.32rem;
+  font-family: var(--font-title);
+  letter-spacing: 0.35px;
+  outline: none;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+.search-input::placeholder {
+  color: rgba(197, 205, 247, 0.6);
+}
+
+.chat-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  right: 10px;
+}
+
+.chat-btn img {
+  width: 80px;
+  height: auto;
+  position: absolute;
+  top: -10px;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.75));
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 15px);
+  left: 18px;
+  right: 18px;
+  background: #f4f4f7;
+  border-radius: 8px;
+  overflow: hidden;
+  display: none;
+  max-height: 264px;
+  overflow-y: auto;
+  z-index: 55;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+
+.dropdown.open {
+  display: block;
+  animation: fadeDrop 0.16s ease;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.dropdown-item:last-child {
+  border-bottom: 0;
+}
+
+.dropdown-item .icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.dropdown-item .icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-item .d-name {
+  color: #17181f;
+  font-size: 1.34rem;
+  font-family: var(--font-title);
+  line-height: 1;
+}
+
+.dropdown-item:hover {
+  background: #e6e7ee;
+}
+
+.error-banner {
+  max-width: 710px;
+  margin: 0 auto 10px;
+  display: none;
+}
+
+.error-banner.visible {
+  display: block;
+}
+
+.error-banner-inner {
+  background: rgba(140, 20, 20, 0.65);
+  border: 2px solid #ff8e8e;
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.table-container {
+  max-width: none;
+  width: max-content;
+  margin: 26px auto 0;
+}
+
+.table-header,
+.guess-row {
+  display: grid;
+  grid-template-columns: 96px repeat(4, 86px) 102px 102px;
+  gap: 14px;
+  width: max-content;
+}
+
+.table-header {
+  margin: 0 auto 6px;
+}
+
+.col-label {
+  text-align: center;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.table-header .subtitle {
+  font-size: 20px;
+  text-shadow:
+    -1.5px 0 0 #0b102a,
+    1.5px 0 0 #0b102a,
+    0 -1.5px 0 #0b102a,
+    0 1.5px 0 #0b102a,
+    -1.5px -1.5px 0 #0b102a,
+    1.5px -1.5px 0 #0b102a,
+    -1.5px 1.5px 0 #0b102a,
+    1.5px 1.5px 0 #0b102a;
+}
+
+.guesses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.guess-row {
+  align-items: stretch;
+}
+
+.cell {
+  min-height: 74px;
+  border-radius: 9px;
+  border: 3px solid #0f0f14;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  padding: 8px;
+  color: #fff;
+  opacity: 0;
+  animation: popIn 0.28s ease forwards;
+}
+
+.cell:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.cell:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.cell:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.cell:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
+.cell:nth-child(5) {
+  animation-delay: 0.24s;
+}
+
+.cell:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.cell-correct {
+  background: linear-gradient(180deg, #52ea46 0%, #29bf24 100%);
+}
+
+.cell-wrong {
+  background: linear-gradient(180deg, #ff533c 0%, #df2818 100%);
+}
+
+.cell-name {
+  justify-content: center;
+  padding: 0;
+}
+
+.cell-name .icon-wrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cell-name .icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.empty-state {
+  margin-top: 14px;
+  padding: 0;
+  text-align: center;
+  background: transparent;
+}
+
+.empty-state p {
+  font-weight: 800;
+  color: rgba(239, 243, 255, 0.88);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  max-width: 420px;
+  width: 92%;
+}
+
+.modal-emoji {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+}
+
+.modal h2 {
+  margin-top: 6px;
+}
+
+.modal > p {
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.modal-brawler {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.modal-brawler .icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modal-brawler .icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-brawler .info {
+  text-align: left;
+}
+
+.modal-brawler .info h3 {
+  font-family: var(--font-title);
+  color: var(--accent);
+}
+
+.modal-brawler .info p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px 24px;
+  font-family: var(--font-title);
+  letter-spacing: 1px;
+  color: #1a0800;
+  font-size: 1.22rem;
+  box-shadow: 0 4px 0 #b8860b;
+}
+
+@keyframes fadeDrop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.78);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 820px) {
+  .classic-page {
+    padding: 8px 12px 36px;
+  }
+
+  .search-zone {
+    max-width: 100%;
+  }
+
+  .clues-row {
+    width: min(100%, 460px);
+    gap: 16px;
+  }
+
+  .clue-main-icon {
+    width: 96px;
+    height: 76px;
+  }
+
+  .table-header,
+  .guess-row {
+    min-width: 634px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    padding-bottom: 8px;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+.won-section {
+  display: none;
+  min-height: 100vh;
+  width: 100%;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.won-section.visible {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.won-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.won-brawler-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #000;
+  border-radius: 24px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
+}
+
+.won-brawler-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+}
+
+.won-title {
+  margin: 0;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+}
+
+.won-score {
+  margin: 0;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.won-section .home-actions {
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .won-section {
+    padding: 24px 16px;
+  }
+}
+@media (max-width: 640px) {
+  .classic-page {
+    padding: 8px 10px 28px;
+  }
+
+  .classic-title {
+    max-width: 320px;
+  }
+
+  .clues-row {
+    grid-template-columns: 1fr;
+    max-width: 280px;
+    gap: 12px;
+  }
+
+  .clue-bubble {
+    width: min(100%, 270px);
+  }
+
+  .clue-bubble-content {
+    inset: 20% 14% 20% 14%;
+  }
+
+  .clues-row .subtitle {
+    font-size: 14px;
+  }
+
+  .table-header .subtitle {
+    font-size: 17px;
+  }
+
+  .search-input {
+    font-size: 1.1rem;
+    padding-right: 74px;
+  }
+
+  .chat-btn img {
+    width: 68px;
+    top: -7px;
+  }
+
+  .release-arrow {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .clue-bubble-content p {
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .hypercharge-image {
+    max-width: 88px;
+    max-height: 72px;
+  }
+}
