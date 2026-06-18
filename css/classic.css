@@ -95,16 +95,17 @@
 
 .clue-bubble-content p {
   font-family: var(--font-title);
-  font-size: clamp(0.72rem, 2.8vw, 1rem);
+  font-size: clamp(0.55rem, 1.9vw, 0.8rem);
   line-height: 1.15;
-  letter-spacing: 0.35px;
+  letter-spacing: 0.3px;
   max-width: 100%;
   font-weight: 800;
   color: #7583a4;
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-align: center;
+  display: block;
 }
 
 .hypercharge-image {
@@ -490,7 +491,7 @@
   margin-top: 6px;
 }
 
-.modal > p {
+.modal>p {
   color: var(--text-muted);
   font-weight: 600;
   margin-bottom: 18px;
@@ -553,6 +554,7 @@
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -564,6 +566,7 @@
     transform: scale(0.78);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -601,6 +604,7 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
 .won-section {
   display: none;
   min-height: 100vh;
@@ -660,6 +664,7 @@
     padding: 24px 16px;
   }
 }
+
 @media (max-width: 640px) {
   .classic-page {
     padding: 8px 10px 28px;
