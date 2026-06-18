@@ -1,30 +1,34 @@
-const DATA_URL   = '../data/brawlers.json';
-const IMG_BASE   = '../assets/brawlers/';
+const SUPABASE_URL = 'https://szvogkodnqqkkkzbiihd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9na29kbnFxa2tremJpaWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDc0NDksImV4cCI6MjA5NjU4MzQ0OX0.HENgyyB136cw5_Dms44g7gTGAxdvpOVg1Fe5dJBQCLo';
+const BRAWLERS_TABLE = 'brawlers';
+const DAILY_SCHEDULE_TABLE = 'daily_schedule';
+const CLASSIC_MODE_ID = 1;
+const BASE_URL = SUPABASE_URL.replace(/\/+$/, '');
+const IMG_BASE = '../assets/brawlers/';
 const IMG_DEFAULT = IMG_BASE + 'default.png';
 const HYPERCHARGE_BASE = '../';
 const RELEASE_ARROW_ICON = '../assets/design/arrow-icon.png';
 const DESC_CLUE_UNLOCK_ATTEMPTS = 4;
 const HYPER_CLUE_UNLOCK_ATTEMPTS = 6;
 
-let allBrawlers    = [];
-let target         = null;
-let guessedIds     = new Set();
+let allBrawlers = [];
+let target = null;
+let guessedIds = new Set();
 let selectedBrawler = null;
-let gameOver       = false;
-let attemptCount   = 0;
+let gameOver = false;
+let attemptCount = 0;
 let descClueUnlocked = false;
 let hyperClueUnlocked = false;
 let activeClueType = null;
 
 async function init() {
   try {
-    const res = await fetch(DATA_URL);
-    if (!res.ok) throw new Error('Impossible de charger brawlers.json');
-    allBrawlers = await res.json();
+    allBrawlers = await loadBrawlers();
 
-    target = getDailyBrawler(allBrawlers);
+    target = await loadDailyTarget();
     setupSearch();
     setupClueUI();
+    attachHyperchargeImageFallback();
     updateClueCards();
 
   } catch (e) {
@@ -32,11 +36,129 @@ async function init() {
   }
 }
 
-// Deterministic pick based on date so everyone sees the same brawler.
-function getDailyBrawler(list) {
-  const d    = new Date();
-  const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-  return list[seed % list.length];
+async function loadBrawlers() {
+  return await loadBrawlersFromSupabase();
+}
+
+async function loadBrawlersFromSupabase() {
+  const url = new URL(`${BASE_URL}/rest/v1/${BRAWLERS_TABLE}`);
+  url.searchParams.set('select', [
+    'id',
+    'name',
+    'icon_path',
+    'gender',
+    'rarity',
+    'class',
+    'attack_range',
+    'movement',
+    'release_year',
+    'description',
+    'hypercharge_name',
+    'hypercharge_image_path',
+    'is_active',
+  ].join(','));
+  url.searchParams.set('is_active', 'eq.true');
+  url.searchParams.set('order', 'id.asc');
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+  });
+
+  if (!res.ok) {
+    const details = await res.text();
+    throw new Error(`Impossible de charger les brawlers depuis Supabase (${res.status}): ${details}`);
+  }
+
+  const data = await res.json();
+  return data.map(normalizeBrawlerRecord);
+}
+
+async function loadDailyTarget() {
+  const today = new Date().toISOString().slice(0, 10);
+  const headers = {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+  };
+
+  // 1) Lire la ligne du jour dans daily_schedule (mode classic = 1)
+  const schedRes = await fetch(
+    `${BASE_URL}/rest/v1/${DAILY_SCHEDULE_TABLE}?play_date=eq.${today}&mode_id=eq.${CLASSIC_MODE_ID}&select=result_id&limit=1`,
+    { headers }
+  );
+  if (!schedRes.ok) {
+    const details = await schedRes.text();
+    throw new Error(`Impossible de charger le planning du jour (${schedRes.status}): ${details}`);
+  }
+  const schedule = await schedRes.json();
+  if (!Array.isArray(schedule) || !schedule.length || schedule[0].result_id == null) {
+    throw new Error('Aucun brawler defini pour aujourd\'hui dans daily_schedule');
+  }
+  const resultId = schedule[0].result_id;
+
+  // 2) Charger le brawler cible depuis la table brawlers via son id
+  const brawlerRes = await fetch(
+    `${BASE_URL}/rest/v1/${BRAWLERS_TABLE}?id=eq.${resultId}&select=id,name,icon_path,gender,rarity,class,attack_range,movement,release_year,description,hypercharge_name,hypercharge_image_path&limit=1`,
+    { headers }
+  );
+  if (!brawlerRes.ok) {
+    const details = await brawlerRes.text();
+    throw new Error(`Impossible de charger le brawler cible (${brawlerRes.status}): ${details}`);
+  }
+  const rows = await brawlerRes.json();
+  if (!Array.isArray(rows) || !rows.length) {
+    throw new Error(`Brawler cible introuvable (id=${resultId})`);
+  }
+  return normalizeBrawlerRecord(rows[0]);
+}
+
+function normalizeBrawlerRecord(record) {
+  if (!record) return record;
+
+  return {
+    id: Number(record.id),
+    name: record.name,
+    gender: record.gender,
+    rarity: record.rarity,
+    role: record.role ?? record.class,
+    attack_range: record.attack_range,
+    movement: record.movement,
+    release_year: Number(record.release_year),
+    icon_path: record.icon_path,
+    description: record.description,
+    hypercharge_path: record.hypercharge_path ?? record.hypercharge_image_path,
+    hypercharge_name: record.hypercharge_name,
+  };
+}
+
+function formatLabel(value) {
+  if (value === null || value === undefined || value === '') return '';
+  const text = String(value).replace(/_/g, ' ');
+  return text
+    .split(' ')
+    .map(part => part ? part.charAt(0).toUpperCase() + part.slice(1) : part)
+    .join(' ');
+}
+
+function resolveAssetPath(path, base) {
+  if (!path) return '';
+
+  const normalized = String(path).trim().replace(/^\/+/, '');
+  if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) {
+    return normalized;
+  }
+
+  if (normalized.startsWith('../') || normalized.startsWith('./')) {
+    return normalized;
+  }
+
+  if (normalized.startsWith('assets/')) {
+    return `../${normalized}`;
+  }
+
+  return `${base}${normalized}`;
 }
 
 function showError(msg, duration = 3000) {
@@ -49,7 +171,7 @@ function showError(msg, duration = 3000) {
 }
 
 function iconSrc(path) {
-  return path ? IMG_BASE + path : IMG_DEFAULT;
+  return resolveAssetPath(path, IMG_BASE) || IMG_DEFAULT;
 }
 
 function getAutocompleteResults(query) {
@@ -96,10 +218,10 @@ function renderAutocomplete(results, dropdown, input) {
 }
 
 function setupSearch() {
-  const input     = document.getElementById('searchInput');
-  const dropdown  = document.getElementById('dropdown');
+  const input = document.getElementById('searchInput');
+  const dropdown = document.getElementById('dropdown');
   const searchWrap = document.querySelector('.search-wrap');
-  const chatBtn   = document.querySelector('.chat-btn');
+  const chatBtn = document.querySelector('.chat-btn');
 
   let timer;
 
@@ -134,8 +256,8 @@ function setupSearch() {
 function submitGuess() {
   if (gameOver) return;
 
-  const input     = document.getElementById('searchInput');
-  const dropdown  = document.getElementById('dropdown');
+  const input = document.getElementById('searchInput');
+  const dropdown = document.getElementById('dropdown');
 
   if (!selectedBrawler) {
     const rawName = input.value.trim().toLowerCase();
@@ -164,9 +286,9 @@ function submitGuess() {
   renderRow(selectedBrawler, result);
   updateClueCards();
 
-  input.value     = '';
+  input.value = '';
   selectedBrawler = null;
-  input.disabled  = false;
+  input.disabled = false;
   input.focus();
 
   if (result.correct) {
@@ -209,6 +331,7 @@ function updateClueCards() {
   const hyperStatus = document.getElementById('hyperClueStatus');
   const descBubbleText = document.getElementById('cluePopupTextDesc');
   const hyperBubbleImage = document.getElementById('cluePopupHyperImage');
+  const hyperBubbleText = document.getElementById('cluePopupTextHyper');
   const descRemaining = remainingClueTries('desc');
   const hyperRemaining = remainingClueTries('hyper');
 
@@ -229,10 +352,7 @@ function updateClueCards() {
   hyperStatus.textContent = hyperRemaining > 0 ? `in ${hyperRemaining} tries` : '';
 
   descBubbleText.textContent = getDescriptionClue(target);
-  if (hyperBubbleImage) {
-    hyperBubbleImage.src = getHyperchargeImageSrc(target);
-    hyperBubbleImage.alt = target ? `${target.name} hypercharge` : 'Hypercharge du brawler';
-  }
+  refreshHyperchargeClue();
 }
 
 function toggleCluePopup(type) {
@@ -278,19 +398,60 @@ function closeCluePopup() {
 }
 
 function getDescriptionClue(brawler) {
-  if (!brawler) return 'Aucun indice disponible.';
+  if (!brawler) return 'unknown';
   if (typeof brawler.description === 'string' && brawler.description.trim()) {
     return brawler.description.trim();
   }
-  return `${brawler.name} est un brawler ${brawler.rarity} specialise en ${brawler.role}.`;
+  return 'unknown';
 }
 
 function getHyperchargeImageSrc(brawler) {
   if (!brawler || typeof brawler.hypercharge_path !== 'string' || !brawler.hypercharge_path.trim()) {
     return '';
   }
+  const path = brawler.hypercharge_path.trim();
+  const hasImageExt = /\.(png|jpg|jpeg|webp|gif|svg)(\?.*)?$/i.test(path);
+  if (!hasImageExt) {
+    return '';
+  }
+  return resolveAssetPath(path, HYPERCHARGE_BASE);
+}
 
-  return HYPERCHARGE_BASE + brawler.hypercharge_path.replace(/^\/+/, '');
+function attachHyperchargeImageFallback() {
+  const img = document.getElementById('cluePopupHyperImage');
+  if (!img) return;
+  img.addEventListener('error', () => {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+  });
+}
+
+function refreshHyperchargeClue() {
+  const img = document.getElementById('cluePopupHyperImage');
+  const text = document.getElementById('cluePopupTextHyper');
+  if (!img || !text) return;
+
+  const src = getHyperchargeImageSrc(target);
+  if (src) {
+    img.style.display = '';
+    img.removeAttribute('data-failed');
+    if (img.getAttribute('src') !== src) {
+      img.src = src;
+    }
+    img.alt = target ? `${target.name} hypercharge` : 'Hypercharge du brawler';
+  } else {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+  }
+  text.textContent = getHyperchargeNameClue(target);
+}
+
+function getHyperchargeNameClue(brawler) {
+  if (!brawler) return 'unknown';
+  if (typeof brawler.hypercharge_name === 'string' && brawler.hypercharge_name.trim()) {
+    return brawler.hypercharge_name.trim();
+  }
+  return 'unknown';
 }
 
 function computeResult(guess, tgt) {
@@ -299,17 +460,17 @@ function computeResult(guess, tgt) {
 
   return {
     correct: guess.id === tgt.id,
-    gender:  guess.gender       === tgt.gender       ? 'correct' : 'wrong',
-    rarity:  guess.rarity       === tgt.rarity       ? 'correct' : 'wrong',
-    role:    guess.role         === tgt.role         ? 'correct' : 'wrong',
-    range:   guess.attack_range === tgt.attack_range ? 'correct' : 'wrong',
-    movement: guess.movement     === tgt.movement     ? 'correct' : 'wrong',
-    year:    yearHint,
+    gender: guess.gender === tgt.gender ? 'correct' : 'wrong',
+    rarity: guess.rarity === tgt.rarity ? 'correct' : 'wrong',
+    role: guess.role === tgt.role ? 'correct' : 'wrong',
+    range: guess.attack_range === tgt.attack_range ? 'correct' : 'wrong',
+    movement: guess.movement === tgt.movement ? 'correct' : 'wrong',
+    year: yearHint,
   };
 }
 
 function renderRow(brawler, result) {
-  const list  = document.getElementById('guessesList');
+  const list = document.getElementById('guessesList');
   const empty = list.querySelector('.empty-state');
   if (empty) empty.remove();
 
@@ -328,12 +489,12 @@ function renderRow(brawler, result) {
              onerror="this.src='${IMG_DEFAULT}'" />
       </div>
     </div>
-    <div class="cell ${result.gender === 'correct' ? 'cell-correct' : 'cell-wrong'}">${brawler.gender}</div>
-    <div class="cell ${result.rarity === 'correct' ? 'cell-correct' : 'cell-wrong'}">${brawler.rarity}</div>
-    <div class="cell ${result.role   === 'correct' ? 'cell-correct' : 'cell-wrong'}">${brawler.role}</div>
-    <div class="cell ${result.range   === 'correct' ? 'cell-correct' : 'cell-wrong'}">${brawler.attack_range}</div>
-    <div class="cell ${result.movement === 'correct' ? 'cell-correct' : 'cell-wrong'}">${brawler.movement}</div>
-    <div class="cell ${result.year    === 'correct' ? 'cell-correct' : 'cell-wrong'}">
+    <div class="cell ${result.gender === 'correct' ? 'cell-correct' : 'cell-wrong'}">${formatLabel(brawler.gender)}</div>
+    <div class="cell ${result.rarity === 'correct' ? 'cell-correct' : 'cell-wrong'}">${formatLabel(brawler.rarity)}</div>
+    <div class="cell ${result.role === 'correct' ? 'cell-correct' : 'cell-wrong'}">${formatLabel(brawler.role)}</div>
+    <div class="cell ${result.range === 'correct' ? 'cell-correct' : 'cell-wrong'}">${formatLabel(brawler.attack_range)}</div>
+    <div class="cell ${result.movement === 'correct' ? 'cell-correct' : 'cell-wrong'}">${formatLabel(brawler.movement)}</div>
+    <div class="cell ${result.year === 'correct' ? 'cell-correct' : 'cell-wrong'}">
       <span class="release-year-wrap">${brawler.release_year}${releaseArrow}</span>
     </div>
   `;
@@ -345,13 +506,13 @@ function showWin() {
   const wonSection = document.getElementById('wonSection');
   const wonBrawlerIcon = document.getElementById('wonBrawlerIcon');
   const wonScore = document.getElementById('wonScore');
-  
+
   wonBrawlerIcon.src = iconSrc(target.icon_path);
   wonBrawlerIcon.alt = target.name;
   wonScore.textContent = `Score: ${attemptCount}`;
-  
+
   wonSection.classList.add('visible');
-  
+
   setTimeout(() => {
     wonSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 300);
