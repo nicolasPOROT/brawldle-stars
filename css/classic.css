@@ -630,8 +630,10 @@
 
 .won-brawler-icon {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
   border: 4px solid #000;
   border-radius: 24px;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
@@ -649,7 +651,7 @@
   font-size: clamp(2.5rem, 8vw, 4rem);
 }
 
-.won-score {
+.won-score, .won-brawler-name {
   margin: 0;
   font-size: clamp(1rem, 4vw, 1.5rem);
   color: rgba(255, 255, 255, 0.8);

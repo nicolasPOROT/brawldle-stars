@@ -509,6 +509,7 @@ function showWin() {
 
   wonBrawlerIcon.src = iconSrc(target.icon_path);
   wonBrawlerIcon.alt = target.name;
+  document.getElementById('wonBrawlerName').textContent = target.name;
   wonScore.textContent = `Score: ${attemptCount}`;
 
   wonSection.classList.add('visible');
