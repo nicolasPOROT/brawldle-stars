@@ -603,6 +603,14 @@
     width: 100%;
     -webkit-overflow-scrolling: touch;
   }
+
+  .table-header {
+    margin: 0 0 6px;
+  }
+
+  .guesses-list {
+    align-items: flex-start;
+  }
 }
 
 .won-section {
@@ -644,11 +652,6 @@
   height: 100%;
   object-fit: contain;
   border-radius: 16px;
-}
-
-.won-title {
-  margin: 0;
-  font-size: clamp(2.5rem, 8vw, 4rem);
 }
 
 .won-score, .won-brawler-name {
