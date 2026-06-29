@@ -1,13 +1,4 @@
-function getTimeUntilMidnight() {
-  var now      = new Date();
-  var midnight = new Date(now);
-  midnight.setHours(24, 0, 0, 0);
-  var diff = midnight - now;
-  var h    = Math.floor(diff / 3600000);
-  var m    = Math.floor((diff % 3600000) / 60000);
-  return 'Reset in: ' + String(h).padStart(2,'0') + 'h ' + String(m).padStart(2,'0') + 'm';
-}
-var RESET_LABEL = getTimeUntilMidnight();
+const RESET_LABEL = Utils.getTimeUntilMidnight();
 
 function createModeCard(cfg, options, index) {
   var href     = cfg.href     || '#';
@@ -46,7 +37,7 @@ function createModeCard(cfg, options, index) {
   menuDiv.appendChild(imgInfo);
 
   var resetSpan = document.createElement('span');
-  resetSpan.textContent = RESET_LABEL;
+  resetSpan.textContent = "Reset in: " + RESET_LABEL;
   resetSpan.style.position = 'absolute';
   resetSpan.style.top = '2px';
   resetSpan.style.right = '45px';
@@ -95,3 +86,151 @@ function initMenuCards(gridSelector, cards, options) {
     grid.appendChild(wrap);
   }
 }
+var infoPanel = document.getElementById('gamemodeInfoPanel');
+  var infoClose = document.getElementById('gamemodeInfoClose');
+  var modesGrid = document.getElementById('modesGrid');
+  var modesPrevBtn = document.getElementById('modesPrevBtn');
+  var modesNextBtn = document.getElementById('modesNextBtn');
+
+  var activeInfoIndex = -1;
+  var currentPage = 0;
+  var isPaging = false;
+  var PAGE_ANIM_OUT_MS = 130;
+  var PAGE_ANIM_IN_MS = 170;
+  var rowsPerPage = 2;
+  var cardsData = [
+    {
+      href: 'classic.html',
+      infoText: 'Devine le Brawler du jour en te basant sur ses caractéristiques.<br><br>🟩 Correct &nbsp; 🟨 Proche &nbsp; 🟥 Incorrect<br><br>⬆️/⬇️ indique si l\'année cible est plus récente ou plus ancienne.',
+    },
+    { href: 'classic.html', infoText: 'Mode compétitif.' },
+    { href: 'classic.html', infoText: 'Mode contre la montre.' },
+    { href: 'classic.html', infoText: 'Mode duo.' },
+    { href: 'classic.html', infoText: 'Mode survie.' },
+    { href: 'classic.html', infoText: 'Mode événements.' },
+    { href: 'classic.html', infoText: 'Mode défis.' },
+    { href: 'classic.html', infoText: 'Mode classement.' },
+  ];
+
+  function getCardsPerPage() {
+    var width = window.innerWidth || document.documentElement.clientWidth;
+    if (width <= 560) return cardsData.length;
+    if (width <= 1120) return cardsData.length;
+    if (width >= 1800) return cardsData.length;
+    if (width >= 1500) return 6;
+    return 4;
+  }
+
+  function getPageStep() {
+    var cardsPerPage = getCardsPerPage();
+    if (cardsPerPage <= rowsPerPage) return cardsPerPage;
+    return rowsPerPage;
+  }
+
+  function getTotalPages() {
+    var cardsPerPage = getCardsPerPage();
+    var step = getPageStep();
+    if (cardsData.length <= cardsPerPage) return 1;
+    return Math.floor((cardsData.length - cardsPerPage + step - 1) / step) + 1;
+  }
+
+  function renderModesPage() {
+    var isMobile = window.matchMedia('(max-width: 560px)').matches;
+    var cardsPerPage = getCardsPerPage();
+    var step = getPageStep();
+    var totalPages = getTotalPages();
+
+    if (currentPage >= totalPages) {
+      currentPage = totalPages - 1;
+    }
+
+    var start = currentPage * step;
+    var end = Math.min(start + cardsPerPage, cardsData.length);
+
+    modesGrid.innerHTML = '';
+
+    for (var i = start; i < end; i++) {
+      var cardNode = createModeCard(cardsData[i], {
+        onInfoClick: handleInfoClick,
+      }, i);
+      modesGrid.appendChild(cardNode);
+    }
+  }
+
+  function animateToPage(nextPage, direction) {
+    var isMobile = window.matchMedia('(max-width: 560px)').matches;
+    if (isMobile) {
+      currentPage = nextPage;
+      renderModesPage();
+      return;
+    }
+
+    if (isPaging) return;
+    isPaging = true;
+    modesGrid.classList.remove('is-entering-left', 'is-entering-right');
+    modesGrid.classList.add(direction === 'next' ? 'is-leaving-left' : 'is-leaving-right');
+
+    window.setTimeout(function() {
+      currentPage = nextPage;
+      renderModesPage();
+      modesGrid.classList.remove('is-leaving-left', 'is-leaving-right');
+      modesGrid.classList.add(direction === 'next' ? 'is-entering-right' : 'is-entering-left');
+
+      window.setTimeout(function() {
+        modesGrid.classList.remove('is-entering-left', 'is-entering-right');
+        isPaging = false;
+      }, PAGE_ANIM_IN_MS);
+    }, PAGE_ANIM_OUT_MS);
+  }
+
+  function openInfoPanel(index) {
+    infoPanel.classList.add('open');
+    infoPanel.setAttribute('aria-hidden', 'false');
+    activeInfoIndex = index;
+
+    // Scroll smooth vers le panel d'info en bas de page.
+    window.requestAnimationFrame(function() {
+      infoPanel.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    });
+  }
+
+  function closeInfoPanel() {
+    infoPanel.classList.remove('open');
+    infoPanel.setAttribute('aria-hidden', 'true');
+    activeInfoIndex = -1;
+  }
+
+  function handleInfoClick(payload) {
+    var nextIndex = typeof payload.index === 'number' ? payload.index : -1;
+
+    if (!infoPanel.classList.contains('open')) {
+      openInfoPanel(nextIndex);
+      return;
+    }
+
+    if (activeInfoIndex === nextIndex) {
+      closeInfoPanel();
+      return;
+    }
+
+    closeInfoPanel();
+    window.setTimeout(function() {
+      openInfoPanel(nextIndex);
+    }, 130);
+  }
+
+  infoClose.addEventListener('click', closeInfoPanel);
+  modesPrevBtn.addEventListener('click', function() {
+    var totalPages = getTotalPages();
+    var nextPage = currentPage <= 0 ? totalPages - 1 : currentPage - 1;
+    animateToPage(nextPage, 'prev');
+  });
+  modesNextBtn.addEventListener('click', function() {
+    var totalPages = getTotalPages();
+    var nextPage = currentPage >= totalPages - 1 ? 0 : currentPage + 1;
+    animateToPage(nextPage, 'next');
+  });
+
+  window.addEventListener('resize', renderModesPage);
+
+  renderModesPage();

@@ -17,15 +17,12 @@
         alt="Brawldle Stars"
         onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block'"
       />
-      <div class="logo-fallback" style="display:none; font-family:var(--font-title); font-size:4rem; background:linear-gradient(135deg,#f7c948,#ff6b35,#ff3fa4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-align:center;">
-        BRAWLDLE
-      </div>
     </div>
 
     <p class="home-tagline title">CAN YOU GUESS THE BRAWLER ?</p>
 
     <div class="home-actions" aria-label="Actions principales">
-      <a href="pages/classic.html" class="play-cta" aria-label="Lancer une partie classique">
+      <a href="pages/classic.html" class="play-cta" aria-label="Lancer une partie">
         <img class="play-shell" src="assets/design/play-button.png" alt="" aria-hidden="true" />
         <div class="play-progress" aria-hidden="true">
           <img src="assets/design/progress-bar-segment-false.png" alt="" />
@@ -48,6 +45,12 @@
   </div>
 
 </main>
+
+<script src="js/utils.js"></script>
+
+<script>
+    Utils.updateResetLabels();
+</script>
 
 </body>
 </html>
