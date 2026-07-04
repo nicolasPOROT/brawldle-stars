@@ -41,11 +41,10 @@ function createModeCard(cfg, options, index) {
   resetSpan.style.position = 'absolute';
   resetSpan.style.top = '2px';
   resetSpan.style.right = '45px';
-  resetSpan.style.color = '#7583A4';
+  resetSpan.style.color = '#7583a4';
   resetSpan.style.fontFamily = "'Lilita One', cursive";
   resetSpan.style.fontSize = '20px';
   resetSpan.style.fontWeight = 'normal';
-  resetSpan.style.letterSpacing = '0.5px';
   menuDiv.appendChild(resetSpan);
 
   card.appendChild(menuDiv);
@@ -61,7 +60,7 @@ function createModeCard(cfg, options, index) {
   var imgUnder = document.createElement('img');
   imgUnder.src = '../assets/gamemode/most_popular.png';
   imgUnder.alt = 'Most Popular';
-  imgUnder.style.width = '76%';
+  imgUnder.style.width = '75%';
   imgUnder.style.height = 'auto';
   underDiv.appendChild(imgUnder);
   card.appendChild(underDiv);
