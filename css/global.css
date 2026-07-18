@@ -7,20 +7,6 @@
 }
 
 :root {
-  --bg:          #0d0f1a;
-  --surface:     #161927;
-  --surface2:    #1e2235;
-  --border:      #2a2f4a;
-  --accent:      #f7c948;
-  --accent2:     #ff6b35;
-  --blue:        #2373ff;
-  --green:       #22c55e;
-  --red:         #ef4444;
-  --text:        #e8eaf6;
-  --text-muted:  #7c85b3;
-  --radius:      14px;
-  --radius-sm:   8px;
-
   --font-title:  'Lilita One', cursive;
   --font-body:   'Nunito', sans-serif;
 
@@ -68,23 +54,7 @@ h1,
   color: var(--title-color);
   line-height: 1.1;
   /* Text shadow for a 3px stroke effect. */
-  text-shadow:
-    -3px 0 0 var(--title-stroke),
-    3px 0 0 var(--title-stroke),
-    0 -3px 0 var(--title-stroke),
-    0 3px 0 var(--title-stroke),
-    -2px -2px 0 var(--title-stroke),
-    2px -2px 0 var(--title-stroke),
-    -2px 2px 0 var(--title-stroke),
-    2px 2px 0 var(--title-stroke),
-    -3px -1px 0 var(--title-stroke),
-    -3px 1px 0 var(--title-stroke),
-    3px -1px 0 var(--title-stroke),
-    3px 1px 0 var(--title-stroke),
-    -1px -3px 0 var(--title-stroke),
-    1px -3px 0 var(--title-stroke),
-    -1px 3px 0 var(--title-stroke),
-    1px 3px 0 var(--title-stroke);
+  text-shadow:-3px 0 0 var(--title-stroke), 3px 0 0 var(--title-stroke), 0 -3px 0 var(--title-stroke), 0 3px 0 var(--title-stroke), -2px -2px 0 var(--title-stroke), 2px -2px 0 var(--title-stroke), -2px 2px 0 var(--title-stroke), 2px 2px 0 var(--title-stroke)
 }
 
 h2,
@@ -94,16 +64,7 @@ h2,
   color: var(--title-color);
   line-height: 1.2;
   /* Text shadow for 1px stroke + drop shadow. */
-  text-shadow:
-    -1px 0 0 var(--title-stroke),
-    1px 0 0 var(--title-stroke),
-    0 -1px 0 var(--title-stroke),
-    0 1px 0 var(--title-stroke),
-    -1px -1px 0 var(--title-stroke),
-    1px -1px 0 var(--title-stroke),
-    -1px 1px 0 var(--title-stroke),
-    1px 1px 0 var(--title-stroke),
-    0 2px 0 rgba(0, 0, 0, 0.8);
+  text-shadow:-1px 0 0 var(--title-stroke), 1px 0 0 var(--title-stroke), 0 -1px 0 var(--title-stroke), 0px 2px 0 rgb(1 1 1)
 }
 
 .description {
@@ -114,8 +75,7 @@ h2,
 }
 
 .text-reset,
-.reset-text,
-.search-input {
+.reset-text{
   font-family: var(--font-title);
   color: var(--reset-color);
 }
