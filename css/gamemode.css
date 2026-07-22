@@ -1,24 +1,10 @@
-.gamemode-page {
-  min-height: 100vh;
-  padding: 8px 24px 30px;
-}
-
 .gamemode-top {
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 0;
-  padding-top: 12px;
-  min-height: 58px;
 }
 
 .gamemode-logo-link {
   position: absolute;
-  left: 0;
-  top: 0;
-  display: inline-block;
-  text-decoration: none;
   transition: transform 0.16s ease;
 }
 
@@ -27,49 +13,34 @@
 }
 
 .gamemode-logo {
-  width: clamp(130px, 16vw, 220px);
-  height: auto;
+  width: 15em;
 }
 
 .gamemode-title {
-  margin-top: 0;
-  margin-bottom: 30px;
+  margin-bottom: 1em;
   text-align: center;
 }
 
 .gamemode-layout {
-  max-width: 1000px;
-  width: 100%;
-  margin: 0 auto;
-  display: block;
-  padding-top: 100px;
+  padding-top: 10em;
 }
 
 .gamemode-carousel {
-  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 0 12px;
 }
 
 .modes-viewport {
   flex: 1;
-  width: auto;
-  overflow: visible;
-  padding: 10px 14px 14px;
 }
 
 .modes-grid {
   display: grid;
   grid-template-columns: repeat(2, 340px);
   grid-template-rows: repeat(4, auto);
-  gap: 28px;
+  gap: 1em;
   justify-content: center;
-  opacity: 1;
   transform: translateX(0);
-  transition: opacity 0.16s ease, transform 0.16s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .modes-grid.is-leaving-left {
@@ -92,25 +63,17 @@
   transform: translateX(10px);
 }
 
-
-
 .mode-card-wrap {
-  position: relative;
-  width: min(340px, calc(100vw - 32px));
+  width: 21em;
 }
 
 .mode-card {
   display: block;
-  width: 100%;
-  text-decoration: none;
-  cursor: pointer;
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.18s;
-  filter: none;
 }
 
 .mode-card:hover {
   transform: translateY(-6px) scale(1.03);
-  filter: none;
 }
 
 .mode-card:active {
@@ -129,9 +92,7 @@
 
 .modes-prev-btn img,
 .modes-next-btn img {
-  display: block;
-  width: 58px;
-  height: auto;
+  width: 4em;
 }
 
 .modes-prev-btn img {
@@ -140,13 +101,11 @@
 
 .modes-prev-btn:hover,
 .modes-next-btn:hover {
-  transform: scale(1.05);
-  filter: brightness(1.07);
-}
+  transform: scale(1.05);}
 
 .modes-prev-btn:active,
 .modes-next-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 .info-button {
@@ -154,8 +113,7 @@
 }
 
 .info-button:hover {
-  transform: scale(1.06);
-  filter: brightness(1.05);
+  transform: scale(1.1);
 }
 
 .info-button:active {
@@ -163,10 +121,9 @@
 }
 
 .gamemode-info-panel {
-  width: min(340px, calc(100vw - 28px));
+  width: 21em;
   margin: 22px auto 0;
   display: none;
-  z-index: 40;
   animation: infoPanelIn 0.22s ease;
   position: relative;
 }
@@ -177,8 +134,6 @@
 
 .gamemode-info-image {
   width: 100%;
-  height: auto;
-  display: block;
 }
 
 .gamemode-info-close {
@@ -188,19 +143,12 @@
   display: inline-block;
   border: none;
   background: transparent;
-  padding: 0;
-  line-height: 0;
-  font-size: 0;
   cursor: pointer;
   transition: transform 0.12s ease, filter 0.12s ease;
 }
 
 .gamemode-info-close img {
-  width: 58px;
-  height: auto;
-  transform: none;
-  transform-origin: center;
-  display: block;
+  width: 4em;
 }
 
 .gamemode-info-close:hover {
@@ -208,17 +156,17 @@
 }
 
 .gamemode-info-close:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 @keyframes infoPanelIn {
   from {
     opacity: 0;
-    transform: translateX(8px) scale(0.98);
+    transform: translateY(10px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -240,27 +188,14 @@
 }
 
 @media (max-width: 1120px) {
-  .gamemode-top {
-    padding-top: 26px;
-    min-height: 0;
-  }
-
   .gamemode-logo-link {
     position: static;
     align-self: center;
   }
 
-  .gamemode-logo {
-    width: clamp(180px, 42vw, 260px);
-  }
-
   .gamemode-layout {
     padding-top: 16px;
     max-width: 100%;
-  }
-
-  .gamemode-carousel {
-    padding: 0 8px;
   }
 
   .modes-grid {
@@ -271,55 +206,11 @@
   .modes-next-btn {
     display: none;
   }
-
-  .gamemode-info-panel {
-    width: min(340px, calc(100vw - 20px));
-    position: relative;
-  }
 }
 
 @media (max-width: 560px) {
-  .gamemode-page {
-    padding: 8px 10px 24px;
-  }
-
-  .gamemode-title {
-    margin-top: 0;
-    margin-bottom: 4px;
-  }
-
-  .gamemode-logo {
-    width: clamp(210px, 60vw, 290px);
-  }
-
-  .modes-grid {
-    gap: 22px;
-    grid-template-columns: min(340px, calc(100vw - 34px));
-    grid-template-rows: none;
-    justify-content: center;
-  }
-
-  .mode-card-wrap {
-    width: min(340px, calc(100vw - 34px));
-  }
-
-  .modes-viewport {
-    width: 100%;
-    padding: 8px 0 12px;
-  }
-
-  .gamemode-info-panel {
-    width: min(340px, calc(100vw - 20px));
-    margin-top: 18px;
-  }
-
   .modes-prev-btn,
   .modes-next-btn {
     display: none;
-  }
-
-  .modes-prev-btn img,
-  .modes-next-btn img {
-    width: 46px;
   }
 }
