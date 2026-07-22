@@ -32,7 +32,7 @@ async function init() {
     updateClueCards();
 
   } catch (e) {
-    showError('Erreur de chargement : ' + e.message, 9999);
+        console.error('Erreur de chargement : ' + e.message, 9999);
   }
 }
 
@@ -159,15 +159,6 @@ function resolveAssetPath(path, base) {
   }
 
   return `${base}${normalized}`;
-}
-
-function showError(msg, duration = 3000) {
-  const banner = document.getElementById('errorBanner');
-  document.getElementById('errorMsg').textContent = msg;
-  banner.classList.add('visible');
-  if (duration < 9000) {
-    setTimeout(() => banner.classList.remove('visible'), duration);
-  }
 }
 
 function iconSrc(path) {
@@ -509,6 +500,7 @@ function showWin() {
 
   wonBrawlerIcon.src = iconSrc(target.icon_path);
   wonBrawlerIcon.alt = target.name;
+  document.getElementById('wonBrawlerName').textContent = target.name;
   wonScore.textContent = `Score: ${attemptCount}`;
 
   wonSection.classList.add('visible');
