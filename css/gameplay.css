@@ -98,13 +98,11 @@
 
 .clue-lock-badge {
   position: absolute;
-  top: 30px;
-  width: 3em;
+  top: 20px;
 }
 
 .clue-lock-badge img {
-  width: 100%;
-
+  width: 3em;
 }
 
 .clue-lock-badge span {
