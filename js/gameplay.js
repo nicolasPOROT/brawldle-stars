@@ -2,6 +2,7 @@ const SUPABASE_URL      = 'https://szvogkodnqqkkkzbiihd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9na29kbnFxa2tremJpaWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDc0NDksImV4cCI6MjA5NjU4MzQ0OX0.HENgyyB136cw5_Dms44g7gTGAxdvpOVg1Fe5dJBQCLo';
 const CLASSIC_MODE_ID   = 1;
 const GADGET_MODE_ID    = 2;
+const STAR_POWER_MODE_ID = 3;
 
 const IMG_DEFAULT        = '../assets/brawlers/default.png';
 const RELEASE_ARROW_ICON = '../assets/design/arrow-icon.png';
@@ -10,6 +11,8 @@ const DESC_CLUE_UNLOCK_ATTEMPTS  = 4;
 const HYPER_CLUE_UNLOCK_ATTEMPTS = 6;
 const GADGET_NAME_CLUE_ATT       = 4;
 const GADGET_DESC_CLUE_ATT       = 6;
+const SP_NAME_CLUE_ATT           = 4;
+const SP_DESC_CLUE_ATT           = 6;
 
 // hypercharge_name et hypercharge_image_path supprimés — maintenant dans abilities
 const BRAWLER_FIELDS = [
@@ -251,6 +254,7 @@ function computeResult(guess, tgt) {
 
 function renderRow(brawler, result) {
   const list = document.getElementById('guessesList');
+  if (!list) return;  
   list.querySelector('.empty-state')?.remove();
   const releaseArrow = result.year === 'correct' ? '' :
     `<img class="release-arrow${result.year === 'lower' ? ' is-down' : ''}"
@@ -381,7 +385,9 @@ function showWin() {
 // ═══════════════════════════════════════════════════
 //  START — détection automatique de la page
 // ═══════════════════════════════════════════════════
-if (document.getElementById('gadgetImage') !== null) {
+if (document.getElementById('starPowerImage') !== null) {
+  initStarPower();  
+} else if (document.getElementById('gadgetImage') !== null) {
   initGadget();
 } else {
   init();
@@ -588,10 +594,10 @@ function gadgetUpdateClueCards() {
   document.getElementById('nameClueStatus').textContent = nameRem > 0 ? `in ${nameRem} tries` : '';
   document.getElementById('descClueStatus').textContent = descRem > 0 ? `in ${descRem} tries` : '';
 
-  // Name clue = nom du brawler cible
+  // Name clue = nom du gadget cible
   document.getElementById('cluePopupTextName').textContent =
     gadgetTarget.gadget.name || 'Unknown';
-  // Desc clue = description du gadget (depuis abilities)
+  // Desc clue = description du gadget
   document.getElementById('cluePopupTextDesc').textContent =
     gadgetTarget.gadget.description || 'Unknown';
 }
@@ -630,6 +636,236 @@ function gadgetShowWin() {
   document.getElementById('wonBrawlerIcon').alt         = gadgetTarget.name;
   document.getElementById('wonBrawlerName').textContent = gadgetTarget.name;
   document.getElementById('wonScore').textContent       = `Score: ${gadgetAttemptCount}`;
+  const wonSection = document.getElementById('wonSection');
+  wonSection.classList.add('visible');
+  setTimeout(() => wonSection.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+}
+
+// ═══════════════════════════════════════════════════
+//  MODE STAR POWER
+// ═══════════════════════════════════════════════════
+let spAllBrawlers      = [];
+let spTarget           = null;
+let spGuessedIds       = new Set();
+let spSelectedBrawler  = null;
+let spGameOver         = false;
+let spAttemptCount     = 0;
+let spNameClueUnlocked = false;
+let spDescClueUnlocked = false;
+let spActiveClueType   = null;
+ 
+async function initStarPower() {
+  try {
+    spAllBrawlers = await spLoadBrawlers();
+    spTarget      = await spLoadDailyTarget();
+    spDisplayImage();
+    spSetupSearch();
+    spSetupClueUI();
+    spUpdateClueCards();
+  } catch (e) {
+    console.error('Star Power — erreur de chargement :', e.message);
+  }
+}
+ 
+async function spLoadBrawlers() {
+  const rows = await supabaseFetch('brawlers', {
+    select:    BRAWLER_FIELDS,
+    is_active: 'eq.true',
+    order:     'name.asc',
+  });
+  return rows.map(normalizeBrawlerRecord);
+}
+ 
+async function spLoadDailyTarget() {
+  const today = new Date().toISOString().slice(0, 10);
+ 
+  // result_id pointe vers le brawler du jour, puis on récupère son star power dans abilities
+  const schedule = await supabaseFetch('daily_schedule', {
+    select:    'result_id',
+    play_date: `eq.${today}`,
+    mode_id:   `eq.${STAR_POWER_MODE_ID}`,
+    limit:     '1',
+  });
+ 
+  if (!schedule.length || schedule[0].result_id == null) {
+    throw new Error(`Aucun star power défini pour le ${today}`);
+  }
+ 
+  const rows = await supabaseFetch('abilities', {
+    select: `id,name,image_path,description,brawlers!brawler_id(${BRAWLER_FIELDS})`,
+    brawler_id: `eq.${schedule[0].result_id}`,
+    type:  'eq.star_power',
+    limit:  '1',
+  });
+ 
+  if (!rows.length || !rows[0].brawlers) {
+    throw new Error('Star power cible introuvable dans abilities');
+  }
+ 
+  const ability = rows[0];
+  const brawler = normalizeBrawlerRecord(ability.brawlers);
+  brawler.starPower = {
+    id:          ability.id,
+    name:        ability.name,
+    image_path:  ability.image_path,
+    description: ability.description,
+  };
+  return brawler;
+}
+ 
+function spDisplayImage() {
+  const img = document.getElementById('starPowerImage');
+  if (!img || !spTarget?.starPower) return;
+  img.src     = spTarget.starPower.image_path;
+  img.alt     = spTarget.starPower.name;
+  img.onerror = () => { img.removeAttribute('src'); };
+}
+ 
+function spSetupSearch() {
+  const input      = document.getElementById('searchInput');
+  const dropdown   = document.getElementById('dropdown');
+  const searchWrap = document.querySelector('.search-wrap');
+  const chatBtn    = document.querySelector('.chat-btn');
+  let timer;
+  const update = () => {
+    const q       = input.value.trim().toLowerCase();
+    const results = spAllBrawlers
+      .filter(b => !spGuessedIds.has(b.id) && b.name.toLowerCase().startsWith(q))
+      .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+    if (!results.length) { dropdown.classList.remove('open'); dropdown.innerHTML = ''; return; }
+    dropdown.innerHTML = results.map(b => `
+      <div class="dropdown-item" data-id="${b.id}">
+        <div class="icon-wrap">
+          <img src="${b.icon_path}" alt="${b.name}" onerror="this.src='${IMG_DEFAULT}'" />
+        </div>
+        <div class="d-name">${b.name}</div>
+      </div>
+    `).join('');
+    dropdown.classList.add('open');
+    dropdown.querySelectorAll('.dropdown-item').forEach(el => {
+      el.addEventListener('click', () => {
+        spSelectedBrawler = spAllBrawlers.find(b => b.id === parseInt(el.dataset.id, 10)) ?? null;
+        if (!spSelectedBrawler) return;
+        input.value = spSelectedBrawler.name;
+        dropdown.classList.remove('open');
+        spSubmitGuess();
+      });
+    });
+  };
+  input.addEventListener('click',   () => { clearTimeout(timer); update(); });
+  input.addEventListener('input',   () => { clearTimeout(timer); timer = setTimeout(update, 150); });
+  input.addEventListener('keydown', e  => { if (e.key === 'Enter') spSubmitGuess(); });
+  chatBtn?.addEventListener('click', spSubmitGuess);
+  document.addEventListener('click', e => {
+    if (searchWrap && !searchWrap.contains(e.target)) dropdown.classList.remove('open');
+  });
+}
+ 
+function spSubmitGuess() {
+  if (spGameOver) return;
+  const input    = document.getElementById('searchInput');
+  const dropdown = document.getElementById('dropdown');
+  if (!spSelectedBrawler) {
+    const q = input.value.trim().toLowerCase();
+    spSelectedBrawler = q
+      ? (spAllBrawlers.find(b => b.name.toLowerCase() === q && !spGuessedIds.has(b.id)) ?? null)
+      : null;
+  }
+  if (!spSelectedBrawler || spGuessedIds.has(spSelectedBrawler.id)) return;
+  input.disabled = true;
+  spGuessedIds.add(spSelectedBrawler.id);
+  spAttemptCount++;
+  dropdown.classList.remove('open');
+  const isCorrect = spSelectedBrawler.id === spTarget.id;
+  spRenderResultRow(spSelectedBrawler, isCorrect);
+  spUpdateClueCards();
+  input.value       = '';
+  spSelectedBrawler = null;
+  input.disabled    = false;
+  input.focus();
+  if (isCorrect) { spGameOver = true; setTimeout(spShowWin, 700); }
+}
+ 
+function spRenderResultRow(brawler, isCorrect) {
+  const list = document.getElementById('resultsList');
+  list.querySelector('.empty-state')?.remove();
+  const row = document.createElement('div');
+  row.className = `result-row ${isCorrect ? 'correct' : 'wrong'}`;
+  row.innerHTML = `
+    <div class="icon-wrap">
+      <img src="${brawler.icon_path}" alt="${brawler.name}" onerror="this.src='${IMG_DEFAULT}'" />
+    </div>
+    <span class="result-name subtitle">${brawler.name}</span>
+  `;
+  list.insertBefore(row, list.firstChild);
+}
+ 
+function spSetupClueUI() {
+  document.getElementById('nameClueBtn')?.addEventListener('click', () => {
+    if (spNameClueUnlocked) spToggleCluePopup('name');
+  });
+  document.getElementById('descClueBtn')?.addEventListener('click', () => {
+    if (spDescClueUnlocked) spToggleCluePopup('desc');
+  });
+}
+ 
+function spUpdateClueCards() {
+  spNameClueUnlocked = spAttemptCount >= SP_NAME_CLUE_ATT;
+  spDescClueUnlocked = spAttemptCount >= SP_DESC_CLUE_ATT;
+  const nameRem = Math.max(0, SP_NAME_CLUE_ATT - spAttemptCount);
+  const descRem = Math.max(0, SP_DESC_CLUE_ATT - spAttemptCount);
+  document.getElementById('nameClueIcon').src = spNameClueUnlocked
+    ? '../assets/design/icon-clue_name.png'
+    : '../assets/design/icon-clue_name_lock.png';
+  document.getElementById('descClueIcon').src = spDescClueUnlocked
+    ? '../assets/design/icon-clue_desc.png'
+    : '../assets/design/icon-clue_desc_lock.png';
+  document.getElementById('nameClueBtn').classList.toggle('unlocked', spNameClueUnlocked);
+  document.getElementById('descClueBtn').classList.toggle('unlocked', spDescClueUnlocked);
+  document.getElementById('nameClueTries').textContent  = nameRem;
+  document.getElementById('descClueTries').textContent  = descRem;
+  document.getElementById('nameClueStatus').textContent = nameRem > 0 ? `in ${nameRem} tries` : '';
+  document.getElementById('descClueStatus').textContent = descRem > 0 ? `in ${descRem} tries` : '';
+  // Name clue = nom du star power cible
+  document.getElementById('cluePopupTextName').textContent = spTarget.starPower.name || 'Unknown';
+  // Desc clue = description du star power (depuis abilities)
+  document.getElementById('cluePopupTextDesc').textContent = spTarget.starPower.description || 'Unknown';
+}
+ 
+function spToggleCluePopup(type) {
+  const id   = type === 'name' ? 'nameClueBtn' : 'descClueBtn';
+  const card = document.getElementById(id);
+  (spActiveClueType === type && card.classList.contains('showing-clue'))
+    ? spCloseCluePopup()
+    : spOpenCluePopup(type);
+}
+ 
+function spOpenCluePopup(type) {
+  const showName = type === 'name';
+  document.getElementById('nameClueBtn').classList.toggle('showing-clue',  showName);
+  document.getElementById('descClueBtn').classList.toggle('showing-clue', !showName);
+  document.getElementById('nameClueBtn').setAttribute('aria-expanded',  String( showName));
+  document.getElementById('descClueBtn').setAttribute('aria-expanded',  String(!showName));
+  document.getElementById('nameClueBubble').setAttribute('aria-hidden', String(!showName));
+  document.getElementById('descClueBubble').setAttribute('aria-hidden', String( showName));
+  spActiveClueType = type;
+}
+ 
+function spCloseCluePopup() {
+  spActiveClueType = null;
+  ['nameClueBtn', 'descClueBtn'].forEach(id => {
+    document.getElementById(id).classList.remove('showing-clue');
+    document.getElementById(id).setAttribute('aria-expanded', 'false');
+  });
+  document.getElementById('nameClueBubble').setAttribute('aria-hidden', 'true');
+  document.getElementById('descClueBubble').setAttribute('aria-hidden', 'true');
+}
+ 
+function spShowWin() {
+  document.getElementById('wonBrawlerIcon').src         = spTarget.icon_path;
+  document.getElementById('wonBrawlerIcon').alt         = spTarget.name;
+  document.getElementById('wonBrawlerName').textContent = spTarget.name;
+  document.getElementById('wonScore').textContent       = `Score: ${spAttemptCount}`;
   const wonSection = document.getElementById('wonSection');
   wonSection.classList.add('visible');
   setTimeout(() => wonSection.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);

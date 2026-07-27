@@ -496,3 +496,30 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Star Power */
+.star-power-display {
+  display: flex;
+  justify-content: center;
+  margin: 1em auto 0;
+}
+ 
+.star-power-frame {
+  position: relative;
+  width: 10em;
+  height: 10em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.star-power-frame-bg {
+  position: absolute;
+  width: 100%;
+  object-fit: contain;
+}
+ 
+.star-power-image {
+  width: 60%;
+  animation: popIn 0.3s ease forwards;
+}
