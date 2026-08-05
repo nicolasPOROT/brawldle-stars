@@ -523,3 +523,32 @@
   width: 60%;
   animation: popIn 0.3s ease forwards;
 }
+
+/* Skin */
+.skin-display {
+  display: flex;
+  justify-content: center;
+  margin: 1em auto 0;
+}
+
+.skin-frame {
+  position: relative;
+  width: 20em;
+  height: 20em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skin-frame-bg {
+  position: absolute;
+  width: 100%;
+  object-fit: contain;
+}
+
+.skin-image {
+  width: 60%;
+  animation: popIn 0.3s ease forwards;
+  filter: blur(var(--skin-blur, 40px));
+  transition: filter 0.6s ease;
+}
