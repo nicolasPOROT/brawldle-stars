@@ -548,6 +548,8 @@
 
 .skin-image {
   width: 60%;
+  height: 60%;
+  object-fit: contain;
   animation: popIn 0.3s ease forwards;
   filter: blur(var(--skin-blur, 40px));
   transition: filter 0.6s ease;
