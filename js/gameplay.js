@@ -10,6 +10,7 @@ const MODE = {
   GADGET: 2,
   STAR_POWER: 3,
   SKIN: 4,
+  HYPERCHARGE: 5,
   EMOJIS: 6,
 };
 
@@ -289,8 +290,10 @@ async function loadTargetAbility(id){
     })
   );
 
-  if(ability.type==="gadget")
+  if(ability.type === "gadget")
     brawler.gadget=ability;
+  else if(ability.type === "hypercharge")
+    brawler.hypercharge=ability;
   else
     brawler.starPower=ability;
 
@@ -329,6 +332,9 @@ function detectPage(){
 
   if(document.getElementById('starPowerImage'))
     return MODE.STAR_POWER;
+
+  if(document.getElementById('hyperchargeImage'))
+    return MODE.HYPERCHARGE;
 
   if(document.getElementById('skinImage'))
     return MODE.SKIN;
@@ -369,6 +375,10 @@ async function init(){
 
       case MODE.STAR_POWER:
         initStarPower();
+        break;
+
+      case MODE.HYPERCHARGE:
+        initHypercharge();
         break;
 
       case MODE.SKIN:
@@ -544,6 +554,10 @@ function submitGuess() {
 
         case MODE.STAR_POWER:
             starPowerGuess(current);
+            break;
+
+        case MODE.HYPERCHARGE:
+            hyperchargeGuess(current);
             break;
 
         case MODE.SKIN:
@@ -929,6 +943,58 @@ function starPowerGuess(brawler){
     updateAbilityClues(
         STAR_CLUES,
         state.target.starPower
+    );
+
+    if(correct){
+
+        state.gameOver=true;
+        setTimeout(showSimpleWin,700);
+
+    }
+
+}
+
+// ===============================
+// HYPERCHARGE MODE
+// ===============================
+
+const HYPERCHARGE_CLUES = {
+    NAME:4,
+    DESC:6
+};
+
+function initHypercharge(){
+
+    displayAbilityImage(
+        "hyperchargeImage",
+        state.target.hypercharge
+    );
+
+    setupAbilityClues(
+        HYPERCHARGE_CLUES,
+        state.target.hypercharge
+    );
+
+    updateAbilityClues(
+        HYPERCHARGE_CLUES,
+        state.target.hypercharge
+    );
+
+}
+
+function hyperchargeGuess(brawler){
+
+    const correct=
+        brawler.id===state.target.id;
+
+    renderSimpleGuess(
+        brawler,
+        correct
+    );
+
+    updateAbilityClues(
+        HYPERCHARGE_CLUES,
+        state.target.hypercharge
     );
 
     if(correct){

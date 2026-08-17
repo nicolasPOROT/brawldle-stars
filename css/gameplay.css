@@ -524,6 +524,33 @@
   animation: popIn 0.3s ease forwards;
 }
 
+/* Hypercharge */
+.hypercharge-display {
+  display: flex;
+  justify-content: center;
+  margin: 1em auto 0;
+}
+
+.hypercharge-frame {
+  position: relative;
+  width: 10em;
+  height: 10em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hypercharge-frame-bg {
+  position: absolute;
+  width: 100%;
+  object-fit: contain;
+}
+
+.hypercharge-mode-image {
+  width: 50%;
+  animation: popIn 0.3s ease forwards;
+}
+
 /* Skin */
 .skin-display {
   display: flex;
