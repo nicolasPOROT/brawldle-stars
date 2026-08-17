@@ -10,6 +10,7 @@ const MODE = {
   GADGET: 2,
   STAR_POWER: 3,
   SKIN: 4,
+  EMOJIS: 6,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -26,7 +27,8 @@ const FIELDS = {
     'attack_range',
     'movement',
     'release_year',
-    'description'
+    'description',
+    'emojis'
   ].join(','),
 
   ABILITY: [
@@ -166,7 +168,9 @@ function normalizeBrawler(r){
 
     icon_path:r.icon_path,
 
-    description:r.description||''
+    description:r.description||'',
+
+    emojis:r.emojis||''
 
   };
 
@@ -329,6 +333,9 @@ function detectPage(){
   if(document.getElementById('skinImage'))
     return MODE.SKIN;
 
+  if(document.getElementById('emojiClues'))
+    return MODE.EMOJIS;
+
   return MODE.CLASSIC;
 
 }
@@ -366,6 +373,10 @@ async function init(){
 
       case MODE.SKIN:
         initSkin();
+        break;
+
+      case MODE.EMOJIS:
+        initEmojis();
         break;
 
     }
@@ -537,6 +548,10 @@ function submitGuess() {
 
         case MODE.SKIN:
             skinGuess(current);
+            break;
+
+        case MODE.EMOJIS:
+            emojiGuess(current);
             break;
 
     }
@@ -1216,4 +1231,61 @@ function showError(msg,time=3000){
 
     }
 
+}
+
+// ===============================
+// EMOJI MODE
+// ===============================
+
+const EMOJI_CLUE_COUNT = 4;
+
+function splitEmojiClues(value) {
+    if (typeof Intl !== "undefined" && Intl.Segmenter) {
+        return Array.from(
+            new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(value || ""),
+            part => part.segment
+        );
+    }
+
+    return Array.from(value || "");
+}
+
+function initEmojis() {
+    const clues = splitEmojiClues(state.target.emojis).slice(0, EMOJI_CLUE_COUNT);
+    state.target.emojiClues = clues;
+
+    if (clues.length !== EMOJI_CLUE_COUNT) {
+        throw new Error("This brawler needs exactly 4 emoji clues.");
+    }
+
+    updateEmojiClues();
+}
+
+function emojiGuess(brawler) {
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+    updateEmojiClues();
+
+    if (correct) {
+        state.gameOver = true;
+        setTimeout(showSimpleWin, 700);
+    }
+}
+
+function updateEmojiClues() {
+    const clues = state.target.emojiClues || [];
+
+    document.querySelectorAll(".emoji-clue").forEach((clue, index) => {
+        const unlocked = index <= state.attempts;
+        const image = clue.querySelector("img");
+        const value = clue.querySelector(".emoji-clue-value");
+
+        clue.classList.toggle("is-unlocked", unlocked);
+        clue.setAttribute("aria-label", unlocked ? `Indice ${index + 1}: ${clues[index]}` : `Indice ${index + 1} verrouillé`);
+        image.src = unlocked
+            ? "../assets/design/icon-clue_bubble.png"
+            : "../assets/design/icon-clue_bubble_2.png";
+        value.textContent = unlocked ? clues[index] : "";
+    });
 }

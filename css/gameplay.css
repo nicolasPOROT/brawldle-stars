@@ -554,3 +554,34 @@
   filter: blur(var(--skin-blur, 40px));
   transition: filter 0.6s ease;
 }
+
+/* Emoji mode */
+.emoji-display {
+  display: flex;
+  justify-content: center;
+  margin: 1em auto 1em;
+}
+
+.emoji-clues {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1em;
+  width: 40em;
+}
+
+.emoji-clue {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.emoji-clue img {
+  width: 100%;
+}
+
+.emoji-clue-value {
+  position: absolute;
+  font-size: clamp(1.5rem, 8vw, 4rem);
+  line-height: 1;
+}
