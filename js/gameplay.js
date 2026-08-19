@@ -12,6 +12,7 @@ const MODE = {
   SKIN: 4,
   HYPERCHARGE: 5,
   EMOJIS: 6,
+  MYSTERY: 7,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -339,6 +340,9 @@ function detectPage(){
   if(document.getElementById('skinImage'))
     return MODE.SKIN;
 
+  if(document.getElementById('mysteryImage'))
+    return MODE.MYSTERY;
+
   if(document.getElementById('emojiClues'))
     return MODE.EMOJIS;
 
@@ -383,6 +387,10 @@ async function init(){
 
       case MODE.SKIN:
         initSkin();
+        break;
+
+      case MODE.MYSTERY:
+        initMystery();
         break;
 
       case MODE.EMOJIS:
@@ -562,6 +570,10 @@ function submitGuess() {
 
         case MODE.SKIN:
             skinGuess(current);
+            break;
+
+        case MODE.MYSTERY:
+            mysteryGuess(current);
             break;
 
         case MODE.EMOJIS:
@@ -1258,6 +1270,54 @@ function showSkinWin(){
             "0px"
         );
 
+    showSimpleWin();
+
+}
+
+// ===============================
+// MYSTERY MODE
+// ===============================
+
+function initMystery(){
+
+    displayMystery();
+
+}
+
+function mysteryGuess(brawler){
+
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+
+    if(correct){
+
+        revealMystery();
+        state.gameOver=true;
+        setTimeout(showMysteryWin,700);
+
+    }
+
+}
+
+function revealMystery(){
+
+    $("#mysteryImage")?.classList.add('is-revealed');
+
+}
+
+function displayMystery(){
+
+    const img=$("#mysteryImage");
+    if(!img) return;
+
+    img.src=state.target.skin.image_path;
+    img.alt='Silhouette du brawler mystère';
+    img.onerror=()=>img.removeAttribute("src");
+
+}
+
+function showMysteryWin(){
     showSimpleWin();
 
 }
