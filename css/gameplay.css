@@ -608,6 +608,11 @@
   filter: none;
 }
 
+/* Buffie */
+.buffie-icon-clue-image {
+  object-fit: contain;
+}
+
 /* Emoji mode */
 .emoji-display {
   display: flex;

@@ -13,6 +13,7 @@ const MODE = {
   HYPERCHARGE: 5,
   EMOJIS: 6,
   MYSTERY: 7,
+  BUFFIE: 8,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -206,7 +207,7 @@ async function loadMode(id){
 
   const mode=await one('game_mode',{
     select:FIELDS.GAME_MODE,
-    id:`eq.${id}`
+    [typeof id === 'number' ? 'id' : 'name']:`eq.${id}`
   });
 
   if(!mode.is_enabled)
@@ -235,7 +236,7 @@ async function loadSchedule(mode){
 async function loadTarget(modeId){
 
   const mode=await loadMode(modeId);
-  const schedule=await loadSchedule(modeId);
+  const schedule=await loadSchedule(mode.id);
 
   switch(mode.result_source){
 
@@ -298,6 +299,8 @@ async function loadTargetAbility(id){
   else
     brawler.starPower=ability;
 
+  brawler.ability=ability;
+
   return brawler;
 
 }
@@ -343,6 +346,9 @@ function detectPage(){
   if(document.getElementById('mysteryImage'))
     return MODE.MYSTERY;
 
+  if(document.getElementById('buffieImage'))
+    return MODE.BUFFIE;
+
   if(document.getElementById('emojiClues'))
     return MODE.EMOJIS;
 
@@ -360,9 +366,13 @@ async function init(){
 
     state.mode=detectPage();
 
+    const targetMode = state.mode === MODE.BUFFIE
+      ? 'buffie'
+      : state.mode;
+
     [state.brawlers,state.target]=await Promise.all([
       loadBrawlers(),
-      loadTarget(state.mode)
+      loadTarget(targetMode)
     ]);
 
     setupSearch();
@@ -391,6 +401,10 @@ async function init(){
 
       case MODE.MYSTERY:
         initMystery();
+        break;
+
+      case MODE.BUFFIE:
+        initBuffie();
         break;
 
       case MODE.EMOJIS:
@@ -574,6 +588,10 @@ function submitGuess() {
 
         case MODE.MYSTERY:
             mysteryGuess(current);
+            break;
+
+        case MODE.BUFFIE:
+            buffieGuess(current);
             break;
 
         case MODE.EMOJIS:
@@ -1320,6 +1338,95 @@ function displayMystery(){
 function showMysteryWin(){
     showSimpleWin();
 
+}
+
+// ===============================
+// BUFFIE MODE
+// ===============================
+
+const BUFFIE_CLUES = {
+    ICON: 4,
+    IMAGE: 6
+};
+
+function initBuffie(){
+    displayBuffie();
+    setupBuffieClues();
+    updateBuffieClues();
+}
+
+function buffieGuess(brawler){
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+    updateBuffieClues();
+
+    if(correct){
+        revealBuffie();
+        state.gameOver = true;
+        setTimeout(showSimpleWin, 700);
+    }
+}
+
+function displayBuffie(){
+    const img = $("#buffieImage");
+    if(!img) return;
+
+    img.src = state.target.ability?.image_path || "";
+    img.alt = "Silhouette du buffie";
+    img.onerror = () => img.removeAttribute("src");
+}
+
+function setupBuffieClues(){
+    $("#buffieIconClueBtn")?.addEventListener("click", () => {
+        if(state.attempts >= BUFFIE_CLUES.ICON)
+            toggleBuffieIconClue();
+    });
+
+    $("#buffieImageClueBtn")?.addEventListener("click", () => {
+        if(state.attempts >= BUFFIE_CLUES.IMAGE)
+            toggleBuffieImage();
+    });
+}
+
+function updateBuffieClues(){
+    updateBuffieCard("Icon", BUFFIE_CLUES.ICON);
+    updateBuffieCard("Image", BUFFIE_CLUES.IMAGE);
+
+    const icon = $("#buffieIconClueImage");
+    if(icon){
+        icon.src = state.target.ability?.description || "";
+        icon.alt = "Icône du buffie";
+        icon.onerror = () => icon.removeAttribute("src");
+    }
+}
+
+function updateBuffieCard(type, unlockAt){
+    const unlocked = state.attempts >= unlockAt;
+    const id = `buffie${type}Clue`;
+
+    $("#"+id+"Btn")?.classList.toggle("unlocked", unlocked);
+    $("#"+id+"Icon").src = unlocked
+        ? `../assets/design/icon-clue_${type === "Icon" ? "desc" : "buffie"}.png`
+        : `../assets/design/icon-clue_${type === "Icon" ? "desc" : "buffie"}_lock.png`;
+    $("#"+id+"Tries").textContent = Math.max(0, unlockAt - state.attempts);
+    $("#"+id+"Status").textContent = unlocked ? "" : `in ${unlockAt - state.attempts} tries`;
+}
+
+function toggleBuffieIconClue(){
+    const card = $("#buffieIconClueBtn");
+    const bubble = $("#buffieIconClueBubble");
+    const isOpen = card.classList.toggle("showing-clue");
+
+    bubble.setAttribute("aria-hidden", String(!isOpen));
+}
+
+function revealBuffie(){
+    $("#buffieImage")?.classList.add("is-revealed");
+}
+
+function toggleBuffieImage(){
+    $("#buffieImage")?.classList.toggle("is-revealed");
 }
 
 // ===============================
