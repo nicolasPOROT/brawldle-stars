@@ -446,6 +446,8 @@
 
 .gadget-image {
   width: 60%;
+  height: 60%;
+  object-fit: contain;
   animation: popIn 0.3s ease forwards;
 }
 
@@ -521,6 +523,8 @@
  
 .star-power-image {
   width: 60%;
+  height: 60%;
+  object-fit: contain;
   animation: popIn 0.3s ease forwards;
 }
 
@@ -547,7 +551,9 @@
 }
 
 .hypercharge-mode-image {
-  width: 50%;
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
   animation: popIn 0.3s ease forwards;
 }
 
