@@ -15,6 +15,7 @@ const MODE = {
   MYSTERY: 7,
   BUFFIE: 8,
   ICON: 9,
+  DESCRIPTION: 10,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -362,6 +363,9 @@ function detectPage(){
   if(document.getElementById('emojiClues'))
     return MODE.EMOJIS;
 
+  if(document.getElementById('brawlerDescription'))
+    return MODE.DESCRIPTION;
+
   return MODE.CLASSIC;
 
 }
@@ -423,6 +427,10 @@ async function init(){
 
       case MODE.EMOJIS:
         initEmojis();
+        break;
+
+      case MODE.DESCRIPTION:
+        initDescription();
         break;
 
     }
@@ -614,6 +622,10 @@ function submitGuess() {
 
         case MODE.EMOJIS:
             emojiGuess(current);
+            break;
+
+        case MODE.DESCRIPTION:
+            descriptionGuess(current);
             break;
 
     }
@@ -1587,4 +1599,55 @@ function updateEmojiClues() {
             : "../assets/design/icon-clue_bubble_2.png";
         value.textContent = unlocked ? clues[index] : "";
     });
+}
+
+// ===============================
+// DESCRIPTION MODE
+// ===============================
+
+const DESCRIPTION_WORD_INTERVALS = [2, 4, 8, 16, 0];
+
+function initDescription() {
+    updateBrawlerDescription();
+}
+
+function descriptionGuess(brawler) {
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+    updateBrawlerDescription(correct);
+
+    if (correct) {
+        state.gameOver = true;
+        setTimeout(showSimpleWin, 700);
+    }
+}
+
+function updateBrawlerDescription(reveal = false) {
+    const description = $("#brawlerDescription");
+    if (!description) return;
+
+    const text = state.target.description || "Unknown";
+
+    if (reveal) {
+        description.textContent = text;
+        return;
+    }
+
+    const interval = DESCRIPTION_WORD_INTERVALS[
+        Math.min(state.attempts, DESCRIPTION_WORD_INTERVALS.length - 1)
+    ];
+
+    description.textContent = maskDescriptionWords(
+        text,
+        interval
+    );
+}
+
+function maskDescriptionWords(text, interval) {
+    const words = String(text).trim().split(/\s+/).filter(Boolean);
+
+    return words.map((word, index) =>
+        (index + 1) % interval === 0 ? "_" : word
+    ).join(" ");
 }
