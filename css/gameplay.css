@@ -643,3 +643,18 @@
   font-size: clamp(1.5rem, 8vw, 4rem);
   line-height: 1;
 }
+
+/* Profile icon */
+.profile-icon-viewport {
+  position: relative;
+  width: 60%;
+  height: 60%;
+  overflow: hidden;
+}
+
+.profile-icon-image {
+  position: absolute;
+  width: var(--icon-zoom, 400%);
+  height: var(--icon-zoom, 400%);
+  transition: width 0.6s ease, height 0.6s ease;
+}

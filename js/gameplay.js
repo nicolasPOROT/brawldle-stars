@@ -14,6 +14,7 @@ const MODE = {
   EMOJIS: 6,
   MYSTERY: 7,
   BUFFIE: 8,
+  ICON: 9,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -24,6 +25,7 @@ const FIELDS = {
     'id',
     'name',
     'icon_path',
+    'profile_icon_path',
     'gender',
     'rarity',
     'class',
@@ -171,6 +173,8 @@ function normalizeBrawler(r){
 
     icon_path:r.icon_path,
 
+    profile_icon_path:r.profile_icon_path,
+
     description:r.description||'',
 
     emojis:r.emojis||''
@@ -248,6 +252,9 @@ async function loadTarget(modeId){
 
     case 'skin':
       return loadTargetSkin(schedule.result_id);
+
+    case 'icon':
+      return loadTargetBrawler(schedule.result_id);
 
     default:
       throw new Error('Unknown result source');
@@ -343,6 +350,9 @@ function detectPage(){
   if(document.getElementById('skinImage'))
     return MODE.SKIN;
 
+  if(document.getElementById('profileIconImage'))
+    return MODE.ICON;
+
   if(document.getElementById('mysteryImage'))
     return MODE.MYSTERY;
 
@@ -397,6 +407,10 @@ async function init(){
 
       case MODE.SKIN:
         initSkin();
+        break;
+
+      case MODE.ICON:
+        initIcon();
         break;
 
       case MODE.MYSTERY:
@@ -584,6 +598,10 @@ function submitGuess() {
 
         case MODE.SKIN:
             skinGuess(current);
+            break;
+
+        case MODE.ICON:
+            iconGuess(current);
             break;
 
         case MODE.MYSTERY:
@@ -1290,6 +1308,54 @@ function showSkinWin(){
 
     showSimpleWin();
 
+}
+
+// ===============================
+// ICON MODE
+// ===============================
+
+const ICON_ZOOM_LEVELS = [4, 3, 2, 1];
+
+function initIcon(){
+    displayProfileIcon();
+    updateIconZoom();
+}
+
+function iconGuess(brawler){
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+    updateIconZoom();
+
+    if(correct){
+        state.gameOver = true;
+        setTimeout(showIconWin, 700);
+    }
+}
+
+function displayProfileIcon(){
+    const img = $('#profileIconImage');
+    if(!img) return;
+
+    img.src = state.target.profile_icon_path;
+    img.alt = `Icône de profil de ${state.target.name}`;
+    img.onerror = () => img.removeAttribute('src');
+}
+
+function updateIconZoom(){
+    const viewport = document.querySelector('.profile-icon-viewport');
+    if(!viewport) return;
+
+    const zoom = ICON_ZOOM_LEVELS[
+        Math.min(state.attempts, ICON_ZOOM_LEVELS.length - 1)
+    ];
+    viewport.style.setProperty('--icon-zoom', `${zoom * 100}%`);
+}
+
+function showIconWin(){
+    document.querySelector('.profile-icon-viewport')
+        ?.style.setProperty('--icon-zoom', '100%');
+    showSimpleWin();
 }
 
 // ===============================
