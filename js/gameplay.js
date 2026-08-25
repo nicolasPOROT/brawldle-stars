@@ -16,6 +16,7 @@ const MODE = {
   BUFFIE: 8,
   ICON: 9,
   DESCRIPTION: 10,
+    TITLE: 11,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -34,7 +35,9 @@ const FIELDS = {
     'movement',
     'release_year',
     'description',
-    'emojis'
+    'emojis',
+    'title',
+    'prestige_title'
   ].join(','),
 
   ABILITY: [
@@ -178,7 +181,11 @@ function normalizeBrawler(r){
 
     description:r.description||'',
 
-    emojis:r.emojis||''
+    emojis:r.emojis||'',
+
+    title:r.title||'',
+
+    prestige_title:r.prestige_title||''
 
   };
 
@@ -366,6 +373,9 @@ function detectPage(){
   if(document.getElementById('brawlerDescription'))
     return MODE.DESCRIPTION;
 
+    if(document.getElementById('brawlerTitle'))
+        return MODE.TITLE;
+
   return MODE.CLASSIC;
 
 }
@@ -380,8 +390,10 @@ async function init(){
 
     state.mode=detectPage();
 
-    const targetMode = state.mode === MODE.BUFFIE
+        const targetMode = state.mode === MODE.BUFFIE
       ? 'buffie'
+            : state.mode === MODE.TITLE
+                ? 'title'
       : state.mode;
 
     [state.brawlers,state.target]=await Promise.all([
@@ -432,6 +444,10 @@ async function init(){
       case MODE.DESCRIPTION:
         initDescription();
         break;
+
+            case MODE.TITLE:
+                initTitle();
+                break;
 
     }
 
@@ -626,6 +642,10 @@ function submitGuess() {
 
         case MODE.DESCRIPTION:
             descriptionGuess(current);
+            break;
+
+        case MODE.TITLE:
+            titleGuess(current);
             break;
 
     }
@@ -1606,6 +1626,91 @@ function updateEmojiClues() {
 // ===============================
 
 const DESCRIPTION_WORD_INTERVALS = [2, 4, 8, 16, 0];
+
+const TITLE_CLUES = {
+    PRESTIGE_TITLE: 4,
+    ICON: 6
+};
+
+function initTitle() {
+    updateBrawlerTitle();
+    setupTitleClues();
+    updateTitleClues();
+}
+
+function titleGuess(brawler) {
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+    updateBrawlerTitle(correct);
+    updateTitleClues();
+
+    if (correct) {
+        state.gameOver = true;
+        setTimeout(showSimpleWin, 700);
+    }
+}
+
+function updateBrawlerTitle(reveal = false) {
+    const title = $("#brawlerTitle");
+    if (!title) return;
+
+    title.textContent = state.target.title || "Unknown";
+}
+
+function setupTitleClues() {
+    $("#prestigeTitleClueBtn")?.addEventListener("click", () => {
+        if (state.attempts >= TITLE_CLUES.PRESTIGE_TITLE)
+            toggleTitlePopup("prestigeTitle");
+    });
+
+    $("#titleIconClueBtn")?.addEventListener("click", () => {
+        if (state.attempts >= TITLE_CLUES.ICON)
+            toggleTitlePopup("icon");
+    });
+}
+
+function updateTitleClues() {
+    updateTitleCard("prestigeTitle", TITLE_CLUES.PRESTIGE_TITLE);
+    updateTitleCard("titleIcon", TITLE_CLUES.ICON);
+
+    $("#cluePopupTextPrestigeTitle").textContent =
+        state.target.prestige_title || "Unknown";
+
+    const icon = $("#cluePopupTitleIcon");
+    if (icon) {
+        icon.src = state.target.profile_icon_path || "";
+        icon.alt = `Icône de profil de ${state.target.name}`;
+    }
+}
+
+function updateTitleCard(type, unlockAt) {
+    const unlocked = state.attempts >= unlockAt;
+    const iconType = type === "prestigeTitle" ? "title" : "desc";
+
+    $("#" + type + "ClueBtn")?.classList.toggle("unlocked", unlocked);
+    $("#" + type + "ClueIcon").src = unlocked
+        ? `../assets/design/icon-clue_${iconType}.png`
+        : `../assets/design/icon-clue_${iconType}_lock.png`;
+    $("#" + type + "ClueTries").textContent = Math.max(0, unlockAt - state.attempts);
+    $("#" + type + "ClueStatus").textContent = state.attempts < unlockAt
+        ? `in ${unlockAt - state.attempts} tries`
+        : "";
+}
+
+function toggleTitlePopup(type) {
+    const card = $("#" + (type === "prestigeTitle" ? "prestigeTitle" : "titleIcon") + "ClueBtn");
+    const other = $("#" + (type === "prestigeTitle" ? "titleIcon" : "prestigeTitle") + "ClueBtn");
+    const bubble = $("#" + (type === "prestigeTitle" ? "prestigeTitle" : "titleIcon") + "ClueBubble");
+    const otherBubble = $("#" + (type === "prestigeTitle" ? "titleIcon" : "prestigeTitle") + "ClueBubble");
+    const isOpen = card.classList.contains("showing-clue");
+
+    card.classList.toggle("showing-clue", !isOpen);
+    other.classList.remove("showing-clue");
+    bubble.setAttribute("aria-hidden", String(isOpen));
+    otherBubble.setAttribute("aria-hidden", "true");
+    state.clue.active = isOpen ? null : type;
+}
 
 function initDescription() {
     updateBrawlerDescription();

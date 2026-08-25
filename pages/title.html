@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brawldle - Description</title>
+  <title>Brawldle - Title</title>
   <link rel="stylesheet" href="../css/global.css" />
   <link rel="stylesheet" href="../css/home.css" />
   <link rel="stylesheet" href="../css/gameplay.css" />
@@ -14,30 +14,42 @@
       <a href="../index.html" class="classic-logo-link" title="Accueil">
         <img src="../assets/design/logo_brawldle-stars.png" alt="Brawldle Stars" class="classic-logo" />
       </a>
-      <h1 class="classic-title title">Guess the brawler description</h1>
+      <h1 class="classic-title title">Guess the brawler title</h1>
     </section>
 
-    <section class="description-display" aria-label="Description partiellement révélée">
-      <div class="description-frame">
+    <section class="description-display" aria-label="Titre du brawler">
+      <div class="title-frame">
         <img src="../assets/design/guess_interface.png" alt="" class="description-frame-bg" aria-hidden="true" />
-        <span id="brawlerDescription" class="brawler-description subtitle" aria-live="polite"></span>
+        <span id="brawlerTitle" class="brawler-description subtitle" aria-live="polite"></span>
       </div>
+    </section>
+
+    <section class="clues-row" aria-label="Indices disponibles">
+      <button class="clue-card is-locked" id="prestigeTitleClueBtn" type="button" aria-expanded="false">
+        <span class="clue-lock-badge"><img src="../assets/design/icon-clue_lock.png" alt="Cadenas" /><span id="prestigeTitleClueTries">4</span></span>
+        <img class="clue-main-icon" id="prestigeTitleClueIcon" src="../assets/design/icon-clue_title_lock.png" alt="Indice titre prestige" />
+        <span class="clue-bubble" id="prestigeTitleClueBubble" aria-hidden="true"><img src="../assets/design/icon-clue_bubble.png" alt="" class="clue-bubble-bg" /><span class="clue-bubble-content"><p class="description" id="cluePopupTextPrestigeTitle"></p></span></span>
+        <span class="clue-name subtitle">Prestige title clue</span><span class="clue-status subtitle" id="prestigeTitleClueStatus">in 4 tries</span>
+      </button>
+
+      <button class="clue-card is-locked" id="titleIconClueBtn" type="button" aria-expanded="false">
+        <span class="clue-lock-badge"><img src="../assets/design/icon-clue_lock.png" alt="Cadenas" /><span id="titleIconClueTries">6</span></span>
+        <img class="clue-main-icon" id="titleIconClueIcon" src="../assets/design/icon-clue_desc_lock.png" alt="Indice icône" />
+        <span class="clue-bubble" id="titleIconClueBubble" aria-hidden="true"><img src="../assets/design/icon-clue_bubble.png" alt="" class="clue-bubble-bg" /><span class="clue-bubble-content"><img id="cluePopupTitleIcon" class="title-icon-clue-image" alt="Icône de profil" /></span></span>
+        <span class="clue-name subtitle">Icon clue</span><span class="clue-status subtitle" id="titleIconClueStatus">in 6 tries</span>
+      </button>
     </section>
 
     <section class="search-zone">
       <div class="search-wrap">
         <input type="text" class="search-input" id="searchInput" placeholder="Guess the brawler" autocomplete="off" />
-        <button class="chat-btn" type="button" aria-label="Valider la réponse">
-          <img src="../assets/design/icon-chat.png" alt="Chat" />
-        </button>
+        <button class="chat-btn" type="button" aria-label="Valider la réponse"><img src="../assets/design/icon-chat.png" alt="Chat" /></button>
         <div class="dropdown" id="dropdown"></div>
       </div>
     </section>
 
     <section class="results-zone">
-      <div class="results-list" id="resultsList">
-        <div class="empty-state"><p>Start by searching a brawler.</p></div>
-      </div>
+      <div class="results-list" id="resultsList"><div class="empty-state"><p>Start by searching a brawler.</p></div></div>
     </section>
   </main>
 

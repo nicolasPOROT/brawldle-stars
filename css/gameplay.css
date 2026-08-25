@@ -80,6 +80,11 @@
   width: 7em;
 }
 
+.title-icon-clue-image {
+  display: block;
+  width: 7em;
+}
+
 .release-year-wrap {
   display: inline-flex;
   align-items: center;
@@ -685,4 +690,13 @@
   z-index: 1;
   width: 90%;
   text-align: center;
+}
+
+/* Title mode */
+.title-frame {
+  position: relative;
+  width: 12em;
+  height: 6em;
+  display: grid;
+  place-items: center;
 }
