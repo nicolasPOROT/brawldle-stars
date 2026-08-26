@@ -193,7 +193,7 @@ var infoPanel = document.getElementById('gamemodeInfoPanel');
     var width = window.innerWidth || document.documentElement.clientWidth;
     if (width <= 560) return cardsData.length;
     if (width <= 1120) return cardsData.length;
-    if (width >= 1800) return cardsData.length;
+    if (width >= 1800) return 8;
     if (width >= 1500) return 6;
     return 4;
   }

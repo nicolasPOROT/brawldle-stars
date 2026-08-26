@@ -31,6 +31,7 @@
 
 .modes-viewport {
   flex: 1;
+  min-width: 0;
 }
 
 .modes-grid {
@@ -200,7 +201,11 @@
   }
 
   .modes-grid {
-    grid-template-columns: 340px;
+    width: min(100%, 340px);
+    margin: 0 auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-flow: row;
   }
 
   .modes-prev-btn,
