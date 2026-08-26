@@ -1,4 +1,38 @@
 const RESET_LABEL = Utils.getTimeUntilMidnight();
+const SUPABASE_URL = 'https://szvogkodnqqkkkzbiihd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9na29kbnFxa2tremJpaWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDc0NDksImV4cCI6MjA5NjU4MzQ0OX0.HENgyyB136cw5_Dms44g7gTGAxdvpOVg1Fe5dJBQCLo';
+
+async function fetchRows(table, params) {
+  var url = new URL(SUPABASE_URL + '/rest/v1/' + table);
+  Object.keys(params).forEach(function(key) {
+    url.searchParams.set(key, params[key]);
+  });
+
+  var response = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return response.json();
+}
+
+function normalizeModeName(name) {
+  return String(name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_');
+}
+
+function getModePage(name) {
+  var pageName = normalizeModeName(name);
+  return pageName + '.html';
+}
 
 function createModeCard(cfg, options, index) {
   var href     = cfg.href     || '#';
@@ -17,7 +51,7 @@ function createModeCard(cfg, options, index) {
   menuDiv.style.height = 'auto';
 
   var imgMenu = document.createElement('img');
-  imgMenu.src = '../assets/gamemode/default.png';
+  imgMenu.src = cfg.modeImage || '../assets/gamemode/default.png';
   imgMenu.alt = 'Menu Default';
   imgMenu.style.width = '100%';
   imgMenu.style.height = 'auto';
@@ -49,21 +83,23 @@ function createModeCard(cfg, options, index) {
 
   card.appendChild(menuDiv);
 
-  var underDiv = document.createElement('div');
-  underDiv.style.position = 'relative';
-  underDiv.style.width = '100%';
-  underDiv.style.height = 'auto';
-  underDiv.style.marginTop = '-20px';
-  underDiv.style.display = 'flex';
-  underDiv.style.justifyContent = 'center';
-  underDiv.style.alignItems = 'flex-end';
-  var imgUnder = document.createElement('img');
-  imgUnder.src = '../assets/gamemode/most_popular.png';
-  imgUnder.alt = 'Most Popular';
-  imgUnder.style.width = '75%';
-  imgUnder.style.height = 'auto';
-  underDiv.appendChild(imgUnder);
-  card.appendChild(underDiv);
+  if (cfg.labelImage) {
+    var underDiv = document.createElement('div');
+    underDiv.style.position = 'relative';
+    underDiv.style.width = '100%';
+    underDiv.style.height = 'auto';
+    underDiv.style.marginTop = '-20px';
+    underDiv.style.display = 'flex';
+    underDiv.style.justifyContent = 'center';
+    underDiv.style.alignItems = 'flex-end';
+    var imgUnder = document.createElement('img');
+    imgUnder.src = cfg.labelImage;
+    imgUnder.alt = 'Label du mode';
+    imgUnder.style.width = '75%';
+    imgUnder.style.height = 'auto';
+    underDiv.appendChild(imgUnder);
+    card.appendChild(underDiv);
+  }
 
   wrap.appendChild(card);
 
@@ -86,6 +122,7 @@ function initMenuCards(gridSelector, cards, options) {
   }
 }
 var infoPanel = document.getElementById('gamemodeInfoPanel');
+  var infoImage = infoPanel.querySelector('.gamemode-info-image');
   var infoClose = document.getElementById('gamemodeInfoClose');
   var modesGrid = document.getElementById('modesGrid');
   var modesPrevBtn = document.getElementById('modesPrevBtn');
@@ -100,16 +137,57 @@ var infoPanel = document.getElementById('gamemodeInfoPanel');
   var cardsData = [
     {
       href: 'classic.html',
-      infoText: 'Devine le Brawler du jour en te basant sur ses caractéristiques.<br><br>🟩 Correct &nbsp; 🟨 Proche &nbsp; 🟥 Incorrect<br><br>⬆️/⬇️ indique si l\'année cible est plus récente ou plus ancienne.',
+      modeImage: '../assets/gamemode/classic_mode.png',
+      labelImage: '../assets/gamemode/most_popular.png',
+      infoImage: '../assets/gamemode/gamemode_info_classic.png',
     },
-    { href: 'classic.html', infoText: 'Mode compétitif.' },
-    { href: 'classic.html', infoText: 'Mode contre la montre.' },
-    { href: 'classic.html', infoText: 'Mode duo.' },
-    { href: 'classic.html', infoText: 'Mode survie.' },
-    { href: 'classic.html', infoText: 'Mode événements.' },
-    { href: 'classic.html', infoText: 'Mode défis.' },
-    { href: 'classic.html', infoText: 'Mode classement.' },
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/most_popular.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/new.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/trending.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/most_popular.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/new.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/trending.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
+    { href: 'classic.html', modeImage: '../assets/gamemode/classic_mode.png', labelImage: '../assets/gamemode/most_popular.png', infoImage: '../assets/gamemode/gamemode_info_classic.png'},
   ];
+
+  async function loadCardsData() {
+    var today = new Date().toISOString().slice(0, 10);
+    var schedule = await fetchRows('daily_schedule', {
+      select: 'mode_id,mode_slot',
+      play_date: 'eq.' + today,
+      order: 'mode_slot.asc',
+    });
+
+    if (!schedule.length) {
+      throw new Error('daily_schedule: no modes for today');
+    }
+
+    var modeIds = schedule.map(function(row) { return row.mode_id; });
+    var modes = await fetchRows('game_mode', {
+      select: 'id,name,label,is_enabled',
+      id: 'in.(' + modeIds.join(',') + ')',
+      is_enabled: 'eq.true',
+    });
+    var modesById = {};
+    modes.forEach(function(mode) { modesById[mode.id] = mode; });
+
+    return schedule
+      .map(function(row) {
+        var mode = modesById[row.mode_id];
+        if (!mode) return null;
+        var modeName = normalizeModeName(mode.name);
+        var labelName = normalizeModeName(mode.label);
+        return {
+          href: getModePage(mode.name),
+          modeImage: '../assets/gamemode/' + modeName + '_mode.png',
+          infoImage: '../assets/gamemode/gamemode_info_' + modeName + '.png',
+          labelImage: labelName ? '../assets/gamemode/' + labelName + '.png' : null,
+          infoText: mode.name,
+          modeSlot: row.mode_slot,
+        };
+      })
+      .filter(function(card) { return card !== null; });
+  }
 
   function getCardsPerPage() {
     var width = window.innerWidth || document.documentElement.clientWidth;
@@ -127,14 +205,12 @@ var infoPanel = document.getElementById('gamemodeInfoPanel');
   }
 
   function getTotalPages() {
-    var cardsPerPage = getCardsPerPage();
     var step = getPageStep();
-    if (cardsData.length <= cardsPerPage) return 1;
-    return Math.floor((cardsData.length - cardsPerPage + step - 1) / step) + 1;
+    if (cardsData.length <= getCardsPerPage()) return 1;
+    return Math.ceil(cardsData.length / step);
   }
 
   function renderModesPage() {
-    var isMobile = window.matchMedia('(max-width: 560px)').matches;
     var cardsPerPage = getCardsPerPage();
     var step = getPageStep();
     var totalPages = getTotalPages();
@@ -144,14 +220,14 @@ var infoPanel = document.getElementById('gamemodeInfoPanel');
     }
 
     var start = currentPage * step;
-    var end = Math.min(start + cardsPerPage, cardsData.length);
 
     modesGrid.innerHTML = '';
 
-    for (var i = start; i < end; i++) {
-      var cardNode = createModeCard(cardsData[i], {
+    for (var offset = 0; offset < cardsPerPage; offset++) {
+      var cardIndex = (start + offset) % cardsData.length;
+      var cardNode = createModeCard(cardsData[cardIndex], {
         onInfoClick: handleInfoClick,
-      }, i);
+      }, cardIndex);
       modesGrid.appendChild(cardNode);
     }
   }
@@ -183,6 +259,10 @@ var infoPanel = document.getElementById('gamemodeInfoPanel');
   }
 
   function openInfoPanel(index) {
+    var card = cardsData[index];
+    infoImage.src = card && card.infoImage
+      ? card.infoImage
+      : '../assets/gamemode/gamemode_info_default.png';
     infoPanel.classList.add('open');
     infoPanel.setAttribute('aria-hidden', 'false');
     activeInfoIndex = index;
@@ -232,4 +312,15 @@ var infoPanel = document.getElementById('gamemodeInfoPanel');
 
   window.addEventListener('resize', renderModesPage);
 
-  renderModesPage();
+  loadCardsData()
+    .then(function(cards) {
+      if (cards.length) {
+        cardsData = cards;
+        currentPage = 0;
+        renderModesPage();
+      }
+    })
+    .catch(function(error) {
+      console.error('Impossible de charger les modes du jour.', error);
+      renderModesPage();
+    });

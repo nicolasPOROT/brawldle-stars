@@ -36,7 +36,8 @@
 .modes-grid {
   display: grid;
   grid-template-columns: repeat(2, 340px);
-  grid-template-rows: repeat(4, auto);
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
   gap: 1em;
   justify-content: center;
   transform: translateX(0);
