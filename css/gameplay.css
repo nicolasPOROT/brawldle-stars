@@ -649,6 +649,35 @@
   line-height: 1;
 }
 
+/* Spray mode */
+.spray-display {
+  display: flex;
+  justify-content: center;
+  margin: 1em auto 0;
+}
+
+.spray-frame {
+  position: relative;
+  width: 10em;
+  height: 10em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spray-frame-bg {
+  position: absolute;
+  width: 100%;
+  object-fit: contain;
+}
+
+.spray-image {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+  animation: popIn 0.3s ease forwards;
+}
+
 /* Profile icon */
 .profile-icon-viewport {
   position: relative;

@@ -17,6 +17,7 @@ const MODE = {
   ICON: 9,
   DESCRIPTION: 10,
     TITLE: 11,
+    SPRAY: 12,
 };
 
 const IMG_DEFAULT = '../assets/brawlers/default.png';
@@ -37,7 +38,8 @@ const FIELDS = {
     'description',
     'emojis',
     'title',
-    'prestige_title'
+    'prestige_title',
+    'spray'
   ].join(','),
 
   ABILITY: [
@@ -185,7 +187,9 @@ function normalizeBrawler(r){
 
     title:r.title||'',
 
-    prestige_title:r.prestige_title||''
+    prestige_title:r.prestige_title||'',
+
+    spray:r.spray||''
 
   };
 
@@ -263,6 +267,9 @@ async function loadTarget(modeId){
 
     case 'icon':
       return loadTargetBrawler(schedule.result_id);
+
+        case 'spray':
+            return loadTargetBrawler(schedule.result_id);
 
     default:
       throw new Error('Unknown result source');
@@ -370,6 +377,9 @@ function detectPage(){
   if(document.getElementById('emojiClues'))
     return MODE.EMOJIS;
 
+    if(document.getElementById('sprayImage'))
+        return MODE.SPRAY;
+
   if(document.getElementById('brawlerDescription'))
     return MODE.DESCRIPTION;
 
@@ -394,6 +404,8 @@ async function init(){
       ? 'buffie'
             : state.mode === MODE.TITLE
                 ? 'title'
+      : state.mode === MODE.SPRAY
+                ? 'spray'
       : state.mode;
 
     [state.brawlers,state.target]=await Promise.all([
@@ -447,6 +459,10 @@ async function init(){
 
             case MODE.TITLE:
                 initTitle();
+                break;
+
+            case MODE.SPRAY:
+                initSpray();
                 break;
 
     }
@@ -646,6 +662,10 @@ function submitGuess() {
 
         case MODE.TITLE:
             titleGuess(current);
+            break;
+
+        case MODE.SPRAY:
+            sprayGuess(current);
             break;
 
     }
@@ -1619,6 +1639,37 @@ function updateEmojiClues() {
             : "../assets/design/icon-clue_bubble_2.png";
         value.textContent = unlocked ? clues[index] : "";
     });
+}
+
+// ===============================
+// SPRAY MODE
+// ===============================
+
+function initSpray() {
+    const image = $("#sprayImage");
+
+    if (!state.target.spray) {
+        throw new Error("This brawler needs a spray image.");
+    }
+
+    image.src = state.target.spray;
+    image.alt = `Spray de ${state.target.name}`;
+    image.onerror = () => image.removeAttribute("src");
+
+    setupTitleClues();
+    updateTitleClues();
+}
+
+function sprayGuess(brawler) {
+    const correct = brawler.id === state.target.id;
+
+    renderSimpleGuess(brawler, correct);
+    updateTitleClues();
+
+    if (correct) {
+        state.gameOver = true;
+        setTimeout(showSimpleWin, 700);
+    }
 }
 
 // ===============================
