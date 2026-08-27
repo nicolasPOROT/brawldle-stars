@@ -2,8 +2,9 @@
 // CONFIG
 // ===============================
 
-const SUPABASE_URL = 'https://szvogkodnqqkkkzbiihd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9na29kbnFxa2tremJpaWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDc0NDksImV4cCI6MjA5NjU4MzQ0OX0.HENgyyB136cw5_Dms44g7gTGAxdvpOVg1Fe5dJBQCLo';
+const SUPABASE_URL = "https://szvogkodnqqkkkzbiihd.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9na29kbnFxa2tremJpaWhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDc0NDksImV4cCI6MjA5NjU4MzQ0OX0.HENgyyB136cw5_Dms44g7gTGAxdvpOVg1Fe5dJBQCLo";
 
 const MODE = {
   CLASSIC: 1,
@@ -16,54 +17,49 @@ const MODE = {
   BUFFIE: 8,
   ICON: 9,
   DESCRIPTION: 10,
-    TITLE: 11,
-    SPRAY: 12,
+  TITLE: 11,
+  SPRAY: 12,
 };
 
-const IMG_DEFAULT = '../assets/brawlers/default.png';
-const RELEASE_ARROW = '../assets/design/arrow-icon.png';
+const IMG_DEFAULT = "../assets/brawlers/default.png";
+const RELEASE_ARROW = "../assets/design/arrow-icon.png";
 
 const FIELDS = {
   BRAWLER: [
-    'id',
-    'name',
-    'icon_path',
-    'profile_icon_path',
-    'gender',
-    'rarity',
-    'class',
-    'attack_range',
-    'movement',
-    'release_year',
-    'description',
-    'emojis',
-    'title',
-    'prestige_title',
-    'spray'
-  ].join(','),
+    "id",
+    "name",
+    "icon_path",
+    "profile_icon_path",
+    "gender",
+    "rarity",
+    "class",
+    "attack_range",
+    "movement",
+    "release_year",
+    "description",
+    "emojis",
+    "title",
+    "prestige_title",
+    "spray",
+  ].join(","),
 
   ABILITY: [
-    'id',
-    'brawler_id',
-    'type',
-    'slot',
-    'name',
-    'image_path',
-    'description'
-  ].join(','),
+    "id",
+    "brawler_id",
+    "type",
+    "slot",
+    "name",
+    "image_path",
+    "description",
+  ].join(","),
 
-  SKIN: [
-    'id',
-    'brawler_id',
-    'name',
-    'campaign',
-    'rarity',
-    'image_path'
-  ].join(','),
+  SKIN: ["id", "brawler_id", "name", "campaign", "rarity", "image_path"].join(
+    ",",
+  ),
 
-  GAME_MODE: 'id,name,result_source,is_enabled,label',
+  GAME_MODE: "id,name,result_source,is_enabled,label",
 
-  DAILY: 'result_id,mode_slot'
+  DAILY: "result_id,mode_slot",
 };
 
 // ===============================
@@ -87,13 +83,13 @@ const state = {
   gameOver: false,
 
   clue: {
-    active: null
-  }
+    active: null,
+  },
 };
 
 function finishGame() {
-    state.gameOver = true;
-    Utils.markModeCompleted(state.mode);
+  state.gameOver = true;
+  Utils.markModeCompleted(state.mode);
 }
 
 // ===============================
@@ -101,327 +97,286 @@ function finishGame() {
 // ===============================
 
 async function api(table, params = {}) {
-
   const url = new URL(`${SUPABASE_URL}/rest/v1/${table}`);
 
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
-  const res = await fetch(url,{
-    headers:{
-      apikey:SUPABASE_ANON_KEY,
-      Authorization:`Bearer ${SUPABASE_ANON_KEY}`
-    }
+  const res = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    },
   });
 
-  if(!res.ok){
+  if (!res.ok) {
     throw new Error(await res.text());
   }
 
   return res.json();
-
 }
 
-async function one(table,params){
-
-  const rows=await api(table,{
+async function one(table, params) {
+  const rows = await api(table, {
     ...params,
-    limit:'1'
+    limit: "1",
   });
 
-  if(!rows.length) throw new Error(`${table}: no result`);
+  if (!rows.length) throw new Error(`${table}: no result`);
 
   return rows[0];
-
 }
 
 // ===============================
 // NORMALIZATION
 // ===============================
 
-const RANGE_MAP={
-  "very short":"short",
-  "short":"short",
-  "medium":"normal",
-  "normal":"normal",
-  "long":"long",
-  "very long":"very_long"
+const RANGE_MAP = {
+  "very short": "short",
+  short: "short",
+  medium: "normal",
+  normal: "normal",
+  long: "long",
+  "very long": "very_long",
 };
 
-const MOVE_MAP={
-  "very slow":"very_slow",
-  "slow":"slow",
-  "normal":"normal",
-  "fast":"fast",
-  "very fast":"very_fast"
+const MOVE_MAP = {
+  "very slow": "very_slow",
+  slow: "slow",
+  normal: "normal",
+  fast: "fast",
+  "very fast": "very_fast",
 };
 
-function normalizeWord(v){
-  return String(v||'')
+function normalizeWord(v) {
+  return String(v || "")
     .trim()
     .toLowerCase()
-    .replace(/\s+/g,'_');
+    .replace(/\s+/g, "_");
 }
 
-function normalizeBrawler(r){
+function normalizeBrawler(r) {
+  return {
+    id: +r.id,
 
-  return{
+    name: r.name,
 
-    id:+r.id,
+    gender: normalizeWord(r.gender),
 
-    name:r.name,
+    rarity: normalizeWord(r.rarity),
 
-    gender:normalizeWord(r.gender),
+    role: r.class,
 
-    rarity:normalizeWord(r.rarity),
+    attack_range:
+      RANGE_MAP[normalizeWord(r.attack_range).replace(/_/g, " ")] ||
+      normalizeWord(r.attack_range),
 
-    role:r.class,
+    movement:
+      MOVE_MAP[normalizeWord(r.movement).replace(/_/g, " ")] ||
+      normalizeWord(r.movement),
 
-    attack_range:RANGE_MAP[normalizeWord(r.attack_range).replace(/_/g,' ')]||normalizeWord(r.attack_range),
+    release_year: +r.release_year,
 
-    movement:MOVE_MAP[normalizeWord(r.movement).replace(/_/g,' ')]||normalizeWord(r.movement),
+    icon_path: r.icon_path,
 
-    release_year:+r.release_year,
+    profile_icon_path: r.profile_icon_path,
 
-    icon_path:r.icon_path,
+    description: r.description || "",
 
-    profile_icon_path:r.profile_icon_path,
+    emojis: r.emojis || "",
 
-    description:r.description||'',
+    title: r.title || "",
 
-    emojis:r.emojis||'',
+    prestige_title: r.prestige_title || "",
 
-    title:r.title||'',
-
-    prestige_title:r.prestige_title||'',
-
-    spray:r.spray||''
-
+    spray: r.spray || "",
   };
-
 }
 
-function pretty(v){
-
+function pretty(v) {
   return String(v)
-    .replace(/_/g,' ')
-    .replace(/\b\w/g,m=>m.toUpperCase());
-
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
 // ===============================
 // DATABASE
 // ===============================
 
-async function loadBrawlers(){
-
-  const rows=await api('brawler',{
-    select:FIELDS.BRAWLER,
-    is_active:'eq.true',
-    order:'name.asc'
+async function loadBrawlers() {
+  const rows = await api("brawler", {
+    select: FIELDS.BRAWLER,
+    is_active: "eq.true",
+    order: "name.asc",
   });
 
   return rows.map(normalizeBrawler);
-
 }
 
-async function loadMode(id){
-
-  const mode=await one('game_mode',{
-    select:FIELDS.GAME_MODE,
-    [typeof id === 'number' ? 'id' : 'name']:`eq.${id}`
+async function loadMode(id) {
+  const mode = await one("game_mode", {
+    select: FIELDS.GAME_MODE,
+    [typeof id === "number" ? "id" : "name"]: `eq.${id}`,
   });
 
-  if(!mode.is_enabled)
-    throw new Error('Mode disabled');
+  if (!mode.is_enabled) throw new Error("Mode disabled");
 
   return mode;
-
 }
 
-async function loadSchedule(mode){
+async function loadSchedule(mode) {
+  const today = new Date().toISOString().slice(0, 10);
 
-  const today=new Date().toISOString().slice(0,10);
-
-  return one('daily_schedule',{
-    select:FIELDS.DAILY,
-    play_date:`eq.${today}`,
-    mode_id:`eq.${mode}`
+  return one("daily_schedule", {
+    select: FIELDS.DAILY,
+    play_date: `eq.${today}`,
+    mode_id: `eq.${mode}`,
   });
-
 }
 
 // ===============================
 // TARGET LOADER
 // ===============================
 
-async function loadTarget(modeId){
+async function loadTarget(modeId) {
+  const mode = await loadMode(modeId);
+  const schedule = await loadSchedule(mode.id);
 
-  const mode=await loadMode(modeId);
-  const schedule=await loadSchedule(mode.id);
-
-  switch(mode.result_source){
-
-    case 'brawler':
+  switch (mode.result_source) {
+    case "brawler":
       return loadTargetBrawler(schedule.result_id);
 
-    case 'ability':
+    case "ability":
       return loadTargetAbility(schedule.result_id);
 
-    case 'skin':
+    case "skin":
       return loadTargetSkin(schedule.result_id);
 
-    case 'icon':
+    case "icon":
       return loadTargetBrawler(schedule.result_id);
 
-        case 'spray':
-            return loadTargetBrawler(schedule.result_id);
+    case "spray":
+      return loadTargetBrawler(schedule.result_id);
 
     default:
-      throw new Error('Unknown result source');
-
+      throw new Error("Unknown result source");
   }
-
 }
 
-async function loadTargetBrawler(id){
-
-  const brawler=normalizeBrawler(
-    await one('brawler',{
-      select:FIELDS.BRAWLER,
-      id:`eq.${id}`
-    })
+async function loadTargetBrawler(id) {
+  const brawler = normalizeBrawler(
+    await one("brawler", {
+      select: FIELDS.BRAWLER,
+      id: `eq.${id}`,
+    }),
   );
 
-  const hyper=await api('ability',{
-    select:FIELDS.ABILITY,
-    brawler_id:`eq.${id}`,
-    type:'eq.hypercharge',
-    limit:'1'
+  const hyper = await api("ability", {
+    select: FIELDS.ABILITY,
+    brawler_id: `eq.${id}`,
+    type: "eq.hypercharge",
+    limit: "1",
   });
 
-  brawler.hypercharge=hyper[0]||null;
+  brawler.hypercharge = hyper[0] || null;
 
   return brawler;
-
 }
 
-async function loadTargetAbility(id){
-
-  const ability=await one('ability',{
-    select:FIELDS.ABILITY,
-    id:`eq.${id}`
+async function loadTargetAbility(id) {
+  const ability = await one("ability", {
+    select: FIELDS.ABILITY,
+    id: `eq.${id}`,
   });
 
-  const brawler=normalizeBrawler(
-    await one('brawler',{
-      select:FIELDS.BRAWLER,
-      id:`eq.${ability.brawler_id}`
-    })
+  const brawler = normalizeBrawler(
+    await one("brawler", {
+      select: FIELDS.BRAWLER,
+      id: `eq.${ability.brawler_id}`,
+    }),
   );
 
-  if(ability.type === "gadget")
-    brawler.gadget=ability;
-  else if(ability.type === "hypercharge")
-    brawler.hypercharge=ability;
-  else
-    brawler.starPower=ability;
+  if (ability.type === "gadget") brawler.gadget = ability;
+  else if (ability.type === "hypercharge") brawler.hypercharge = ability;
+  else brawler.starPower = ability;
 
-  brawler.ability=ability;
+  brawler.ability = ability;
 
   return brawler;
-
 }
 
-async function loadTargetSkin(id){
-
-  const skin=await one('skin',{
-    select:FIELDS.SKIN,
-    id:`eq.${id}`
+async function loadTargetSkin(id) {
+  const skin = await one("skin", {
+    select: FIELDS.SKIN,
+    id: `eq.${id}`,
   });
 
-  const brawler=normalizeBrawler(
-    await one('brawler',{
-      select:FIELDS.BRAWLER,
-      id:`eq.${skin.brawler_id}`
-    })
+  const brawler = normalizeBrawler(
+    await one("brawler", {
+      select: FIELDS.BRAWLER,
+      id: `eq.${skin.brawler_id}`,
+    }),
   );
 
-  brawler.skin=skin;
+  brawler.skin = skin;
 
   return brawler;
-
 }
 
 // ===============================
 // PAGE DETECTION
 // ===============================
 
-function detectPage(){
+function detectPage() {
+  if (document.getElementById("gadgetImage")) return MODE.GADGET;
 
-  if(document.getElementById('gadgetImage'))
-    return MODE.GADGET;
+  if (document.getElementById("starPowerImage")) return MODE.STAR_POWER;
 
-  if(document.getElementById('starPowerImage'))
-    return MODE.STAR_POWER;
+  if (document.getElementById("hyperchargeImage")) return MODE.HYPERCHARGE;
 
-  if(document.getElementById('hyperchargeImage'))
-    return MODE.HYPERCHARGE;
+  if (document.getElementById("skinImage")) return MODE.SKIN;
 
-  if(document.getElementById('skinImage'))
-    return MODE.SKIN;
+  if (document.getElementById("profileIconImage")) return MODE.ICON;
 
-  if(document.getElementById('profileIconImage'))
-    return MODE.ICON;
+  if (document.getElementById("mysteryImage")) return MODE.MYSTERY;
 
-  if(document.getElementById('mysteryImage'))
-    return MODE.MYSTERY;
+  if (document.getElementById("buffieImage")) return MODE.BUFFIE;
 
-  if(document.getElementById('buffieImage'))
-    return MODE.BUFFIE;
+  if (document.getElementById("emojiClues")) return MODE.EMOJIS;
 
-  if(document.getElementById('emojiClues'))
-    return MODE.EMOJIS;
+  if (document.getElementById("sprayImage")) return MODE.SPRAY;
 
-    if(document.getElementById('sprayImage'))
-        return MODE.SPRAY;
+  if (document.getElementById("brawlerDescription")) return MODE.DESCRIPTION;
 
-  if(document.getElementById('brawlerDescription'))
-    return MODE.DESCRIPTION;
-
-    if(document.getElementById('brawlerTitle'))
-        return MODE.TITLE;
+  if (document.getElementById("brawlerTitle")) return MODE.TITLE;
 
   return MODE.CLASSIC;
-
 }
 
 // ===============================
 // INIT
 // ===============================
 
-async function init(){
+async function init() {
+  try {
+    state.mode = detectPage();
 
-  try{
+    const targetMode =
+      state.mode === MODE.BUFFIE
+        ? "buffie"
+        : state.mode === MODE.TITLE
+          ? "title"
+          : state.mode === MODE.SPRAY
+            ? "spray"
+            : state.mode;
 
-    state.mode=detectPage();
-
-        const targetMode = state.mode === MODE.BUFFIE
-      ? 'buffie'
-            : state.mode === MODE.TITLE
-                ? 'title'
-      : state.mode === MODE.SPRAY
-                ? 'spray'
-      : state.mode;
-
-    [state.brawlers,state.target]=await Promise.all([
+    [state.brawlers, state.target] = await Promise.all([
       loadBrawlers(),
-      loadTarget(targetMode)
+      loadTarget(targetMode),
     ]);
 
     setupSearch();
 
-    switch(state.mode){
-
+    switch (state.mode) {
       case MODE.CLASSIC:
         initClassic();
         break;
@@ -462,91 +417,73 @@ async function init(){
         initDescription();
         break;
 
-            case MODE.TITLE:
-                initTitle();
-                break;
+      case MODE.TITLE:
+        initTitle();
+        break;
 
-            case MODE.SPRAY:
-                initSpray();
-                break;
-
+      case MODE.SPRAY:
+        initSpray();
+        break;
     }
-
-  }catch(e){
-
+  } catch (e) {
     console.error(e);
-    showError(e.message,9999);
-
+    showError(e.message, 9999);
   }
-
 }
 
-document.addEventListener('DOMContentLoaded',init);
+document.addEventListener("DOMContentLoaded", init);
 
 // ===============================
 // SEARCH / AUTOCOMPLETE
 // ===============================
 
-function setupSearch(){
+function setupSearch() {
+  const input = document.getElementById("searchInput");
+  const dropdown = document.getElementById("dropdown");
+  const wrap = document.querySelector(".search-wrap");
+  const button = document.querySelector(".chat-btn");
 
-    const input=document.getElementById("searchInput");
-    const dropdown=document.getElementById("dropdown");
-    const wrap=document.querySelector(".search-wrap");
-    const button=document.querySelector(".chat-btn");
+  let timer;
 
-    let timer;
+  function refresh() {
+    const q = input.value.trim().toLowerCase();
 
-    function refresh(){
+    const results = state.brawlers
+      .filter((b) => !state.guesses.has(b.id))
+      .filter((b) => b.name.toLowerCase().startsWith(q))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-        const q=input.value.trim().toLowerCase();
+    renderDropdown(results, dropdown, input);
+  }
 
-        const results=state.brawlers
-            .filter(b=>!state.guesses.has(b.id))
-            .filter(b=>b.name.toLowerCase().startsWith(q))
-            .sort((a,b)=>a.name.localeCompare(b.name));
+  input.addEventListener("click", refresh);
 
-        renderDropdown(results,dropdown,input);
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(refresh, 120);
+  });
 
-    }
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") submitGuess();
+  });
 
-    input.addEventListener("click",refresh);
+  button?.addEventListener("click", submitGuess);
 
-    input.addEventListener("input",()=>{
-
-        clearTimeout(timer);
-        timer=setTimeout(refresh,120);
-
-    });
-
-    input.addEventListener("keydown",e=>{
-
-        if(e.key==="Enter")
-            submitGuess();
-
-    });
-
-    button?.addEventListener("click",submitGuess);
-
-    document.addEventListener("click",e=>{
-
-        if(!wrap.contains(e.target))
-            dropdown.classList.remove("open");
-
-    });
-
+  document.addEventListener("click", (e) => {
+    if (!wrap.contains(e.target)) dropdown.classList.remove("open");
+  });
 }
 
-function renderDropdown(list,dropdown,input){
+function renderDropdown(list, dropdown, input) {
+  if (!list.length) {
+    dropdown.innerHTML = "";
+    dropdown.classList.remove("open");
+    return;
+  }
 
-    if(!list.length){
-
-        dropdown.innerHTML="";
-        dropdown.classList.remove("open");
-        return;
-
-    }
-
-    dropdown.innerHTML=list.map(b=>`
+  dropdown.innerHTML = list
+    .map(
+      (b) => `
 
         <div class="dropdown-item" data-id="${b.id}">
 
@@ -559,28 +496,23 @@ function renderDropdown(list,dropdown,input){
 
         </div>
 
-    `).join("");
+    `,
+    )
+    .join("");
 
-    dropdown.classList.add("open");
+  dropdown.classList.add("open");
 
-    dropdown.querySelectorAll(".dropdown-item").forEach(item=>{
+  dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
+    item.onclick = () => {
+      state.selected = state.brawlers.find((b) => b.id == item.dataset.id);
 
-        item.onclick=()=>{
+      input.value = state.selected.name;
 
-            state.selected=state.brawlers.find(
-                b=>b.id==item.dataset.id
-            );
+      dropdown.classList.remove("open");
 
-            input.value=state.selected.name;
-
-            dropdown.classList.remove("open");
-
-            submitGuess();
-
-        };
-
-    });
-
+      submitGuess();
+    };
+  });
 }
 
 // ===============================
@@ -588,98 +520,90 @@ function renderDropdown(list,dropdown,input){
 // ===============================
 
 function submitGuess() {
+  if (state.gameOver) return;
 
-    if (state.gameOver) return;
+  const input = document.getElementById("searchInput");
+  const dropdown = document.getElementById("dropdown");
 
-    const input = document.getElementById("searchInput");
-    const dropdown = document.getElementById("dropdown");
+  input.disabled = true;
 
-    input.disabled = true;
+  if (!state.selected) {
+    const q = input.value.trim().toLowerCase();
 
-    if (!state.selected) {
+    state.selected = state.brawlers.find(
+      (b) => b.name.toLowerCase() === q && !state.guesses.has(b.id),
+    );
+  }
 
-        const q = input.value.trim().toLowerCase();
+  if (!state.selected) {
+    input.disabled = false;
+    input.focus();
+    return;
+  }
 
-        state.selected = state.brawlers.find(
-            b =>
-                b.name.toLowerCase() === q &&
-                !state.guesses.has(b.id)
-        );
+  const current = state.selected;
+  state.selected = null;
 
-    }
+  state.guesses.add(current.id);
+  state.attempts++;
 
-    if (!state.selected) {
-        input.disabled = false;
-        input.focus();
-        return;
-    }
+  input.value = "";
+  dropdown?.classList.remove("open");
 
-    const current = state.selected;
-    state.selected = null;
+  switch (state.mode) {
+    case MODE.CLASSIC:
+      classicGuess(current);
+      break;
 
-    state.guesses.add(current.id);
-    state.attempts++;
+    case MODE.GADGET:
+      gadgetGuess(current);
+      break;
 
-    input.value = "";
-    dropdown?.classList.remove("open");
+    case MODE.STAR_POWER:
+      starPowerGuess(current);
+      break;
 
-    switch (state.mode) {
+    case MODE.HYPERCHARGE:
+      hyperchargeGuess(current);
+      break;
 
-        case MODE.CLASSIC:
-            classicGuess(current);
-            break;
+    case MODE.SKIN:
+      skinGuess(current);
+      break;
 
-        case MODE.GADGET:
-            gadgetGuess(current);
-            break;
+    case MODE.ICON:
+      iconGuess(current);
+      break;
 
-        case MODE.STAR_POWER:
-            starPowerGuess(current);
-            break;
+    case MODE.MYSTERY:
+      mysteryGuess(current);
+      break;
 
-        case MODE.HYPERCHARGE:
-            hyperchargeGuess(current);
-            break;
+    case MODE.BUFFIE:
+      buffieGuess(current);
+      break;
 
-        case MODE.SKIN:
-            skinGuess(current);
-            break;
+    case MODE.EMOJIS:
+      emojiGuess(current);
+      break;
 
-        case MODE.ICON:
-            iconGuess(current);
-            break;
+    case MODE.DESCRIPTION:
+      descriptionGuess(current);
+      break;
 
-        case MODE.MYSTERY:
-            mysteryGuess(current);
-            break;
+    case MODE.TITLE:
+      titleGuess(current);
+      break;
 
-        case MODE.BUFFIE:
-            buffieGuess(current);
-            break;
+    case MODE.SPRAY:
+      sprayGuess(current);
+      break;
+  }
 
-        case MODE.EMOJIS:
-            emojiGuess(current);
-            break;
-
-        case MODE.DESCRIPTION:
-            descriptionGuess(current);
-            break;
-
-        case MODE.TITLE:
-            titleGuess(current);
-            break;
-
-        case MODE.SPRAY:
-            sprayGuess(current);
-            break;
-
-    }
-
-    if (!state.gameOver) {
-        input.disabled = false;
-        input.focus();
-    }
-
+  if (!state.gameOver) {
+    input.disabled = false;
+    input.focus();
+  }
 }
 
 // ===============================
@@ -687,99 +611,87 @@ function submitGuess() {
 // ===============================
 
 function initClassic() {
-
-    setupClassicClues();
-    updateClassicClues();
-
+  setupClassicClues();
+  updateClassicClues();
 }
 
 function classicGuess(brawler) {
+  const result = compareBrawler(brawler, state.target);
 
-    const result = compareBrawler(brawler, state.target);
+  renderClassicRow(brawler, result);
 
-    renderClassicRow(brawler, result);
+  updateClassicClues();
 
-    updateClassicClues();
-
-    if (result.correct) {
-        finishGame();
-        setTimeout(showClassicWin, 700);
-    }
-
+  if (result.correct) {
+    finishGame();
+    setTimeout(showClassicWin, 700);
+  }
 }
 
 function compareBrawler(a, b) {
+  const diff = a.release_year - b.release_year;
 
-    const diff = a.release_year - b.release_year;
+  return {
+    correct: a.id === b.id,
 
-    return {
+    gender: a.gender === b.gender,
 
-        correct: a.id === b.id,
+    rarity: a.rarity === b.rarity,
 
-        gender: a.gender === b.gender,
+    role: a.role === b.role,
 
-        rarity: a.rarity === b.rarity,
+    range: a.attack_range === b.attack_range,
 
-        role: a.role === b.role,
+    movement: a.movement === b.movement,
 
-        range: a.attack_range === b.attack_range,
-
-        movement: a.movement === b.movement,
-
-        year:
-            diff === 0 ? "equal" :
-            diff < 0 ? "higher" :
-            "lower"
-
-    };
-
+    year: diff === 0 ? "equal" : diff < 0 ? "higher" : "lower",
+  };
 }
 
 function renderClassicRow(brawler, result) {
+  const list = document.getElementById("guessesList");
 
-    const list = document.getElementById("guessesList");
+  list.querySelector(".empty-state")?.remove();
 
-    list.querySelector(".empty-state")?.remove();
-
-    const arrow =
-        result.year === "equal"
-            ? ""
-            : `<img class="release-arrow ${result.year==="lower"?"is-down":""}"
+  const arrow =
+    result.year === "equal"
+      ? ""
+      : `<img class="release-arrow ${result.year === "lower" ? "is-down" : ""}"
                     src="${RELEASE_ARROW}">`;
 
-    const row = document.createElement("div");
+  const row = document.createElement("div");
 
-    row.className = "guess-row";
+  row.className = "guess-row";
 
-    row.innerHTML = `
+  row.innerHTML = `
 
-<div class="cell ${result.correct?"cell-correct":"cell-wrong"} cell-name">
+<div class="cell ${result.correct ? "cell-correct" : "cell-wrong"} cell-name">
     <div class="icon-wrap">
         <img src="${brawler.icon_path}" onerror="this.src='${IMG_DEFAULT}'">
     </div>
 </div>
 
-<div class="cell ${result.gender?"cell-correct":"cell-wrong"}">
+<div class="cell ${result.gender ? "cell-correct" : "cell-wrong"}">
 ${pretty(brawler.gender)}
 </div>
 
-<div class="cell ${result.rarity?"cell-correct":"cell-wrong"}">
+<div class="cell ${result.rarity ? "cell-correct" : "cell-wrong"}">
 ${pretty(brawler.rarity)}
 </div>
 
-<div class="cell ${result.role?"cell-correct":"cell-wrong"}">
+<div class="cell ${result.role ? "cell-correct" : "cell-wrong"}">
 ${pretty(brawler.role)}
 </div>
 
-<div class="cell ${result.range?"cell-correct":"cell-wrong"}">
+<div class="cell ${result.range ? "cell-correct" : "cell-wrong"}">
 ${pretty(brawler.attack_range)}
 </div>
 
-<div class="cell ${result.movement?"cell-correct":"cell-wrong"}">
+<div class="cell ${result.movement ? "cell-correct" : "cell-wrong"}">
 ${pretty(brawler.movement)}
 </div>
 
-<div class="cell ${result.year==="equal"?"cell-correct":"cell-wrong"}">
+<div class="cell ${result.year === "equal" ? "cell-correct" : "cell-wrong"}">
 <span class="release-year-wrap">
 ${brawler.release_year}
 ${arrow}
@@ -788,8 +700,7 @@ ${arrow}
 
 `;
 
-    list.prepend(row);
-
+  list.prepend(row);
 }
 
 // ===============================
@@ -797,21 +708,19 @@ ${arrow}
 // ===============================
 
 function showClassicWin() {
+  document.getElementById("winBrawlerIcon").src = state.target.icon_path;
+  document.getElementById("winBrawlerIcon").alt = state.target.name;
+  document.getElementById("winScore").textContent = `Score: ${state.attempts}`;
 
-    document.getElementById("wonBrawlerIcon").src = state.target.icon_path;
-    document.getElementById("wonBrawlerIcon").alt = state.target.name;
-    document.getElementById("wonScore").textContent = `Score: ${state.attempts}`;
+  const winSection = document.getElementById("winSection");
+  winSection.classList.add("visible");
 
-    const won = document.getElementById("wonSection");
-    won.classList.add("visible");
-
-    setTimeout(() => {
-        won.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-    }, 150);
-
+  setTimeout(() => {
+    winSection.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, 150);
 }
 
 // ===============================
@@ -819,140 +728,95 @@ function showClassicWin() {
 // ===============================
 
 const CLASSIC_CLUES = {
-    DESC: 4,
-    HYPER: 6
+  ICON: 4,
+  HYPER: 6,
 };
 
 function setupClassicClues() {
+  $("#iconClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= CLASSIC_CLUES.ICON) toggleClassicPopup("icon");
+  });
 
-    $("#descClueBtn")?.addEventListener("click", () => {
-
-        if (state.attempts >= CLASSIC_CLUES.DESC)
-            toggleClassicPopup("desc");
-
-    });
-
-    $("#hyperClueBtn")?.addEventListener("click", () => {
-
-        if (state.attempts >= CLASSIC_CLUES.HYPER)
-            toggleClassicPopup("hyper");
-
-    });
-
+  $("#hyperClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= CLASSIC_CLUES.HYPER) toggleClassicPopup("hyper");
+  });
 }
 
 function updateClassicClues() {
+  const iconUnlocked = state.attempts >= CLASSIC_CLUES.ICON;
+  const hyperUnlocked = state.attempts >= CLASSIC_CLUES.HYPER;
 
-    const descUnlocked = state.attempts >= CLASSIC_CLUES.DESC;
-    const hyperUnlocked = state.attempts >= CLASSIC_CLUES.HYPER;
+  updateCard("icon", iconUnlocked, CLASSIC_CLUES.ICON - state.attempts);
 
-    updateCard(
-        "desc",
-        descUnlocked,
-        CLASSIC_CLUES.DESC - state.attempts
-    );
+  updateCard("hyper", hyperUnlocked, CLASSIC_CLUES.HYPER - state.attempts);
 
-    updateCard(
-        "hyper",
-        hyperUnlocked,
-        CLASSIC_CLUES.HYPER - state.attempts
-    );
+  const icon = $("#cluePopupIcon");
+  if (icon) {
+    icon.src = state.target.profile_icon_path || "";
+    icon.alt = `Icône de profil de ${state.target.name}`;
+    icon.onerror = () => icon.removeAttribute("src");
+  }
 
-    $("#cluePopupTextDesc").textContent =
-        state.target.description || "Unknown";
+  const img = $("#cluePopupHyperImage");
 
-    const img = $("#cluePopupHyperImage");
-    const txt = $("#cluePopupTextHyper");
-
-    if (state.target.hypercharge) {
-
-        img.src = state.target.hypercharge.image_path;
-        img.alt = state.target.hypercharge.name;
-        img.style.display = "";
-
-        txt.textContent = state.target.hypercharge.name;
-
-    } else {
-
-        img.style.display = "none";
-        txt.textContent = "Unknown";
-
-    }
-
+  if (state.target.hypercharge) {
+    img.src = state.target.hypercharge.image_path;
+    img.alt = state.target.hypercharge.name;
+    img.style.display = "";
+  } else {
+    img.style.display = "none";
+  }
 }
 
 function updateCard(type, unlocked, remaining) {
+  const iconType = type === "icon" ? "desc" : "hypercharge";
 
-    $("#"+type+"ClueBtn")
-        .classList.toggle("unlocked", unlocked);
+  $("#" + type + "ClueBtn").classList.toggle("unlocked", unlocked);
 
-    $("#"+type+"ClueIcon").src =
-        unlocked
-            ? `../assets/design/icon-clue_${type==="hyper"?"hypercharge":type}.png`
-            : `../assets/design/icon-clue_${type==="hyper"?"hypercharge":type}_lock.png`;
+  $("#" + type + "ClueIcon").src = unlocked
+    ? `../assets/design/icon-clue_${iconType}.png`
+    : `../assets/design/icon-clue_${iconType}_lock.png`;
 
-    $("#"+type+"ClueTries").textContent =
-        Math.max(0, remaining);
+  $("#" + type + "ClueTries").textContent = Math.max(0, remaining);
 
-    $("#"+type+"ClueStatus").textContent =
-        remaining > 0
-            ? `in ${remaining} tries`
-            : "";
-
+  $("#" + type + "ClueStatus").textContent =
+    remaining > 0 ? `in ${remaining} tries` : "";
 }
 
 function toggleClassicPopup(type) {
+  if (
+    state.clue.active === type &&
+    $("#" + type + "ClueBtn").classList.contains("showing-clue")
+  ) {
+    closeClassicPopup();
+    return;
+  }
 
-    if (
-        state.clue.active === type &&
-        $("#"+type+"ClueBtn").classList.contains("showing-clue")
-    ) {
-
-        closeClassicPopup();
-        return;
-
-    }
-
-    openClassicPopup(type);
-
+  openClassicPopup(type);
 }
 
 function openClassicPopup(type) {
+  const other = type === "icon" ? "hyper" : "icon";
 
-    const other = type === "desc"
-        ? "hyper"
-        : "desc";
+  $("#" + type + "ClueBtn").classList.add("showing-clue");
 
-    $("#"+type+"ClueBtn")
-        .classList.add("showing-clue");
+  $("#" + other + "ClueBtn").classList.remove("showing-clue");
 
-    $("#"+other+"ClueBtn")
-        .classList.remove("showing-clue");
+  $("#" + type + "ClueBubble").setAttribute("aria-hidden", "false");
 
-    $("#"+type+"ClueBubble")
-        .setAttribute("aria-hidden","false");
+  $("#" + other + "ClueBubble").setAttribute("aria-hidden", "true");
 
-    $("#"+other+"ClueBubble")
-        .setAttribute("aria-hidden","true");
-
-    state.clue.active = type;
-
+  state.clue.active = type;
 }
 
 function closeClassicPopup() {
+  ["icon", "hyper"].forEach((t) => {
+    $("#" + t + "ClueBtn").classList.remove("showing-clue");
 
-    ["desc","hyper"].forEach(t=>{
+    $("#" + t + "ClueBubble").setAttribute("aria-hidden", "true");
+  });
 
-        $("#"+t+"ClueBtn")
-            .classList.remove("showing-clue");
-
-        $("#"+t+"ClueBubble")
-            .setAttribute("aria-hidden","true");
-
-    });
-
-    state.clue.active = null;
-
+  state.clue.active = null;
 }
 
 // ===============================
@@ -960,51 +824,29 @@ function closeClassicPopup() {
 // ===============================
 
 const GADGET_CLUES = {
-    NAME: 4,
-    DESC: 6
+  NAME: 4,
+  DESC: 6,
 };
 
 function initGadget() {
+  displayAbilityImage("gadgetImage", state.target.gadget);
 
-    displayAbilityImage(
-        "gadgetImage",
-        state.target.gadget
-    );
+  setupAbilityClues(GADGET_CLUES, state.target.gadget);
 
-    setupAbilityClues(
-        GADGET_CLUES,
-        state.target.gadget
-    );
-
-    updateAbilityClues(
-        GADGET_CLUES,
-        state.target.gadget
-    );
-
+  updateAbilityClues(GADGET_CLUES, state.target.gadget);
 }
 
 function gadgetGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    const correct =
-        brawler.id === state.target.id;
+  renderSimpleGuess(brawler, correct);
 
-    renderSimpleGuess(
-        brawler,
-        correct
-    );
+  updateAbilityClues(GADGET_CLUES, state.target.gadget);
 
-    updateAbilityClues(
-        GADGET_CLUES,
-        state.target.gadget
-    );
-
-    if(correct){
-
-        finishGame();
-        setTimeout(showSimpleWin,700);
-
-    }
-
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 // ===============================
@@ -1012,51 +854,29 @@ function gadgetGuess(brawler) {
 // ===============================
 
 const STAR_CLUES = {
-    NAME:4,
-    DESC:6
+  NAME: 4,
+  DESC: 6,
 };
 
-function initStarPower(){
+function initStarPower() {
+  displayAbilityImage("starPowerImage", state.target.starPower);
 
-    displayAbilityImage(
-        "starPowerImage",
-        state.target.starPower
-    );
+  setupAbilityClues(STAR_CLUES, state.target.starPower);
 
-    setupAbilityClues(
-        STAR_CLUES,
-        state.target.starPower
-    );
-
-    updateAbilityClues(
-        STAR_CLUES,
-        state.target.starPower
-    );
-
+  updateAbilityClues(STAR_CLUES, state.target.starPower);
 }
 
-function starPowerGuess(brawler){
+function starPowerGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    const correct=
-        brawler.id===state.target.id;
+  renderSimpleGuess(brawler, correct);
 
-    renderSimpleGuess(
-        brawler,
-        correct
-    );
+  updateAbilityClues(STAR_CLUES, state.target.starPower);
 
-    updateAbilityClues(
-        STAR_CLUES,
-        state.target.starPower
-    );
-
-    if(correct){
-
-        finishGame();
-        setTimeout(showSimpleWin,700);
-
-    }
-
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 // ===============================
@@ -1064,83 +884,56 @@ function starPowerGuess(brawler){
 // ===============================
 
 const HYPERCHARGE_CLUES = {
-    NAME:4,
-    DESC:6
+  NAME: 4,
+  DESC: 6,
 };
 
-function initHypercharge(){
+function initHypercharge() {
+  displayAbilityImage("hyperchargeImage", state.target.hypercharge);
 
-    displayAbilityImage(
-        "hyperchargeImage",
-        state.target.hypercharge
-    );
+  setupAbilityClues(HYPERCHARGE_CLUES, state.target.hypercharge);
 
-    setupAbilityClues(
-        HYPERCHARGE_CLUES,
-        state.target.hypercharge
-    );
-
-    updateAbilityClues(
-        HYPERCHARGE_CLUES,
-        state.target.hypercharge
-    );
-
+  updateAbilityClues(HYPERCHARGE_CLUES, state.target.hypercharge);
 }
 
-function hyperchargeGuess(brawler){
+function hyperchargeGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    const correct=
-        brawler.id===state.target.id;
+  renderSimpleGuess(brawler, correct);
 
-    renderSimpleGuess(
-        brawler,
-        correct
-    );
+  updateAbilityClues(HYPERCHARGE_CLUES, state.target.hypercharge);
 
-    updateAbilityClues(
-        HYPERCHARGE_CLUES,
-        state.target.hypercharge
-    );
-
-    if(correct){
-
-        finishGame();
-        setTimeout(showSimpleWin,700);
-
-    }
-
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 // ===============================
 // SHARED ABILITY FUNCTIONS
 // ===============================
 
-function displayAbilityImage(id,ability){
+function displayAbilityImage(id, ability) {
+  const img = $("#" + id);
 
-    const img=$("#"+id);
+  if (!img || !ability) return;
 
-    if(!img||!ability) return;
+  img.src = ability.image_path;
+  img.alt = ability.name;
 
-    img.src=ability.image_path;
-    img.alt=ability.name;
-
-    img.onerror=()=>img.removeAttribute("src");
-
+  img.onerror = () => img.removeAttribute("src");
 }
 
-function renderSimpleGuess(brawler,correct){
+function renderSimpleGuess(brawler, correct) {
+  const list = $("#resultsList");
 
-    const list=$("#resultsList");
+  list.querySelector(".empty-state")?.remove();
 
-    list.querySelector(".empty-state")?.remove();
+  const row = document.createElement("div");
 
-    const row=document.createElement("div");
+  row.className = `result-row ${correct ? "correct" : "wrong"}`;
 
-    row.className=`result-row ${
-        correct?"correct":"wrong"
-    }`;
-
-    row.innerHTML=`
+  row.innerHTML = `
 
 <div class="icon-wrap">
 <img src="${brawler.icon_path}"
@@ -1153,27 +946,24 @@ ${brawler.name}
 
 `;
 
-    list.prepend(row);
-
+  list.prepend(row);
 }
 
 function showSimpleWin() {
+  $("#winBrawlerIcon").src = state.target.icon_path;
+  $("#winBrawlerIcon").alt = state.target.name;
+  $("#winBrawlerName").textContent = state.target.name;
+  $("#winScore").textContent = `Score: ${state.attempts}`;
 
-    $("#wonBrawlerIcon").src = state.target.icon_path;
-    $("#wonBrawlerIcon").alt = state.target.name;
-    $("#wonBrawlerName").textContent = state.target.name;
-    $("#wonScore").textContent = `Score: ${state.attempts}`;
+  const winSection = $("#winSection");
+  winSection.classList.add("visible");
 
-    const won = $("#wonSection");
-    won.classList.add("visible");
-
-    setTimeout(() => {
-        won.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-    }, 150);
-
+  setTimeout(() => {
+    winSection.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, 150);
 }
 
 // ===============================
@@ -1181,190 +971,130 @@ function showSimpleWin() {
 // ===============================
 
 function setupAbilityClues(config, ability) {
+  $("#nameClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= config.NAME) toggleAbilityPopup("name");
+  });
 
-    $("#nameClueBtn")?.addEventListener("click", () => {
-        if (state.attempts >= config.NAME)
-            toggleAbilityPopup("name");
-    });
-
-    $("#descClueBtn")?.addEventListener("click", () => {
-        if (state.attempts >= config.DESC)
-            toggleAbilityPopup("desc");
-    });
-
+  $("#descClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= config.DESC) toggleAbilityPopup("desc");
+  });
 }
 
 function updateAbilityClues(config, ability) {
+  updateAbilityCard("name", config.NAME, state.attempts);
 
-    updateAbilityCard(
-        "name",
-        config.NAME,
-        state.attempts
-    );
+  updateAbilityCard("desc", config.DESC, state.attempts);
 
-    updateAbilityCard(
-        "desc",
-        config.DESC,
-        state.attempts
-    );
+  $("#cluePopupTextName").textContent = ability?.name || "Unknown";
 
-    $("#cluePopupTextName").textContent =
-        ability?.name || "Unknown";
-
-    $("#cluePopupTextDesc").textContent =
-        ability?.description || "Unknown";
-
+  $("#cluePopupTextDesc").textContent = ability?.description || "Unknown";
 }
 
 function updateAbilityCard(type, unlockAt, attempts) {
+  const unlocked = attempts >= unlockAt;
 
-    const unlocked = attempts >= unlockAt;
+  $("#" + type + "ClueBtn")?.classList.toggle("unlocked", unlocked);
 
-    $("#"+type+"ClueBtn")
-        ?.classList.toggle("unlocked", unlocked);
+  $("#" + type + "ClueIcon").src = unlocked
+    ? `../assets/design/icon-clue_${type}.png`
+    : `../assets/design/icon-clue_${type}_lock.png`;
 
-    $("#"+type+"ClueIcon").src =
-        unlocked
-        ? `../assets/design/icon-clue_${type}.png`
-        : `../assets/design/icon-clue_${type}_lock.png`;
+  $("#" + type + "ClueTries").textContent = Math.max(0, unlockAt - attempts);
 
-    $("#"+type+"ClueTries").textContent =
-        Math.max(0, unlockAt - attempts);
-
-    $("#"+type+"ClueStatus").textContent =
-        attempts < unlockAt
-        ? `in ${unlockAt-attempts} tries`
-        : "";
-
+  $("#" + type + "ClueStatus").textContent =
+    attempts < unlockAt ? `in ${unlockAt - attempts} tries` : "";
 }
 
-function toggleAbilityPopup(type){
+function toggleAbilityPopup(type) {
+  if (
+    state.clue.active === type &&
+    $("#" + type + "ClueBtn").classList.contains("showing-clue")
+  ) {
+    closeAbilityPopup();
+    return;
+  }
 
-    if(
-        state.clue.active===type &&
-        $("#"+type+"ClueBtn")
-            .classList.contains("showing-clue")
-    ){
-        closeAbilityPopup();
-        return;
-    }
-
-    openAbilityPopup(type);
-
+  openAbilityPopup(type);
 }
 
-function openAbilityPopup(type){
+function openAbilityPopup(type) {
+  const other = type === "name" ? "desc" : "name";
 
-    const other =
-        type==="name"
-        ? "desc"
-        : "name";
+  $("#" + type + "ClueBtn").classList.add("showing-clue");
 
-    $("#"+type+"ClueBtn")
-        .classList.add("showing-clue");
+  $("#" + other + "ClueBtn").classList.remove("showing-clue");
 
-    $("#"+other+"ClueBtn")
-        .classList.remove("showing-clue");
+  $("#" + type + "ClueBubble").setAttribute("aria-hidden", "false");
 
-    $("#"+type+"ClueBubble")
-        .setAttribute("aria-hidden","false");
+  $("#" + other + "ClueBubble").setAttribute("aria-hidden", "true");
 
-    $("#"+other+"ClueBubble")
-        .setAttribute("aria-hidden","true");
-
-    state.clue.active=type;
-
+  state.clue.active = type;
 }
 
-function closeAbilityPopup(){
+function closeAbilityPopup() {
+  ["name", "desc"].forEach((type) => {
+    $("#" + type + "ClueBtn").classList.remove("showing-clue");
 
-    ["name","desc"].forEach(type=>{
+    $("#" + type + "ClueBubble").setAttribute("aria-hidden", "true");
+  });
 
-        $("#"+type+"ClueBtn")
-            .classList.remove("showing-clue");
-
-        $("#"+type+"ClueBubble")
-            .setAttribute("aria-hidden","true");
-
-    });
-
-    state.clue.active=null;
-
+  state.clue.active = null;
 }
 
 // ===============================
 // SKIN MODE
 // ===============================
 
-const SKIN_BLUR_LEVELS = [20,18,16,14,12,10,8,6,4,2,0];
+const SKIN_BLUR_LEVELS = [20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0];
 
-function initSkin(){
+function initSkin() {
+  displaySkin();
 
-    displaySkin();
-
-    updateSkinBlur();
-
+  updateSkinBlur();
 }
 
-function skinGuess(brawler){
+function skinGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    const correct =
-        brawler.id === state.target.id;
+  renderSimpleGuess(brawler, correct);
 
-    renderSimpleGuess(
-        brawler,
-        correct
-    );
+  updateSkinBlur();
 
-    updateSkinBlur();
-
-    if(correct){
-
-        finishGame();
-        setTimeout(showSkinWin,700);
-
-    }
-
+  if (correct) {
+    finishGame();
+    setTimeout(showSkinWin, 700);
+  }
 }
 
-function displaySkin(){
+function displaySkin() {
+  const img = $("#skinImage");
 
-    const img=$("#skinImage");
+  if (!img) return;
 
-    if(!img) return;
+  img.src = state.target.skin.image_path;
+  img.alt = state.target.skin.name;
 
-    img.src=state.target.skin.image_path;
-    img.alt=state.target.skin.name;
-
-    img.onerror=()=>img.removeAttribute("src");
-
+  img.onerror = () => img.removeAttribute("src");
 }
 
 function updateSkinBlur() {
-    const frame = document.querySelector('.skin-frame');
-    if (!frame) return;
+  const frame = document.querySelector(".skin-frame");
+  if (!frame) return;
 
-    const blur = SKIN_BLUR_LEVELS[
-    Math.min(state.attempts, SKIN_BLUR_LEVELS.length - 1)
-    ];
+  const blur =
+    SKIN_BLUR_LEVELS[Math.min(state.attempts, SKIN_BLUR_LEVELS.length - 1)];
 
-    frame.style.setProperty("--skin-blur", `${blur}px`);
+  frame.style.setProperty("--skin-blur", `${blur}px`);
 
-    const counter = document.getElementById('skinGuessCount');
-    if (counter)
-        counter.textContent = `${state.attempts} / ${SKIN_BLUR_LEVELS.length - 1} guesses`;
+  const counter = document.getElementById("skinGuessCount");
+  if (counter)
+    counter.textContent = `${state.attempts} / ${SKIN_BLUR_LEVELS.length - 1} guesses`;
 }
 
-function showSkinWin(){
+function showSkinWin() {
+  $(".skin-frame")?.style.setProperty("--skin-blur", "0px");
 
-    $(".skin-frame")
-        ?.style.setProperty(
-            "--skin-blur",
-            "0px"
-        );
-
-    showSimpleWin();
-
+  showSimpleWin();
 }
 
 // ===============================
@@ -1373,94 +1103,83 @@ function showSkinWin(){
 
 const ICON_ZOOM_LEVELS = [4, 3, 2, 1];
 
-function initIcon(){
-    displayProfileIcon();
-    updateIconZoom();
+function initIcon() {
+  displayProfileIcon();
+  updateIconZoom();
 }
 
-function iconGuess(brawler){
-    const correct = brawler.id === state.target.id;
+function iconGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    renderSimpleGuess(brawler, correct);
-    updateIconZoom();
+  renderSimpleGuess(brawler, correct);
+  updateIconZoom();
 
-    if(correct){
-        finishGame();
-        setTimeout(showIconWin, 700);
-    }
+  if (correct) {
+    finishGame();
+    setTimeout(showIconWin, 700);
+  }
 }
 
-function displayProfileIcon(){
-    const img = $('#profileIconImage');
-    if(!img) return;
+function displayProfileIcon() {
+  const img = $("#profileIconImage");
+  if (!img) return;
 
-    img.src = state.target.profile_icon_path;
-    img.alt = `Icône de profil de ${state.target.name}`;
-    img.onerror = () => img.removeAttribute('src');
+  img.src = state.target.profile_icon_path;
+  img.alt = `Icône de profil de ${state.target.name}`;
+  img.onerror = () => img.removeAttribute("src");
 }
 
-function updateIconZoom(){
-    const viewport = document.querySelector('.profile-icon-viewport');
-    if(!viewport) return;
+function updateIconZoom() {
+  const viewport = document.querySelector(".profile-icon-viewport");
+  if (!viewport) return;
 
-    const zoom = ICON_ZOOM_LEVELS[
-        Math.min(state.attempts, ICON_ZOOM_LEVELS.length - 1)
-    ];
-    viewport.style.setProperty('--icon-zoom', `${zoom * 100}%`);
+  const zoom =
+    ICON_ZOOM_LEVELS[Math.min(state.attempts, ICON_ZOOM_LEVELS.length - 1)];
+  viewport.style.setProperty("--icon-zoom", `${zoom * 100}%`);
 }
 
-function showIconWin(){
-    document.querySelector('.profile-icon-viewport')
-        ?.style.setProperty('--icon-zoom', '100%');
-    showSimpleWin();
+function showIconWin() {
+  document
+    .querySelector(".profile-icon-viewport")
+    ?.style.setProperty("--icon-zoom", "100%");
+  showSimpleWin();
 }
 
 // ===============================
 // MYSTERY MODE
 // ===============================
 
-function initMystery(){
-
-    displayMystery();
-
+function initMystery() {
+  displayMystery();
 }
 
-function mysteryGuess(brawler){
+function mysteryGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    const correct = brawler.id === state.target.id;
+  renderSimpleGuess(brawler, correct);
 
-    renderSimpleGuess(brawler, correct);
-
-    if(correct){
-
-        revealMystery();
-        finishGame();
-        setTimeout(showMysteryWin,700);
-
-    }
-
+  if (correct) {
+    revealMystery();
+    finishGame();
+    setTimeout(showMysteryWin, 700);
+  }
 }
 
-function revealMystery(){
-
-    $("#mysteryImage")?.classList.add('is-revealed');
-
+function revealMystery() {
+  $("#mysteryImage")?.classList.add("is-revealed");
 }
 
-function displayMystery(){
+function displayMystery() {
+  const img = $("#mysteryImage");
+  if (!img) return;
 
-    const img=$("#mysteryImage");
-    if(!img) return;
-
-    img.src=state.target.skin.image_path;
-    img.alt='Silhouette du brawler mystère';
-    img.onerror=()=>img.removeAttribute("src");
-
+  img.src = state.target.skin.image_path;
+  img.alt = "Silhouette du brawler mystère";
+  img.onerror = () => img.removeAttribute("src");
 }
 
-function showMysteryWin(){
-    showSimpleWin();
-
+function showMysteryWin() {
+  showSimpleWin();
 }
 
 // ===============================
@@ -1468,125 +1187,115 @@ function showMysteryWin(){
 // ===============================
 
 const BUFFIE_CLUES = {
-    ICON: 4,
-    IMAGE: 6
+  ICON: 4,
+  IMAGE: 6,
 };
 
-function initBuffie(){
-    displayBuffie();
-    setupBuffieClues();
-    updateBuffieClues();
+function initBuffie() {
+  displayBuffie();
+  setupBuffieClues();
+  updateBuffieClues();
 }
 
-function buffieGuess(brawler){
-    const correct = brawler.id === state.target.id;
+function buffieGuess(brawler) {
+  const correct = brawler.id === state.target.id;
 
-    renderSimpleGuess(brawler, correct);
-    updateBuffieClues();
+  renderSimpleGuess(brawler, correct);
+  updateBuffieClues();
 
-    if(correct){
-        revealBuffie();
-        finishGame();
-        setTimeout(showSimpleWin, 700);
-    }
+  if (correct) {
+    revealBuffie();
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
-function displayBuffie(){
-    const img = $("#buffieImage");
-    if(!img) return;
+function displayBuffie() {
+  const img = $("#buffieImage");
+  if (!img) return;
 
-    img.src = state.target.ability?.image_path || "";
-    img.alt = "Silhouette du buffie";
-    img.onerror = () => img.removeAttribute("src");
+  img.src = state.target.ability?.image_path || "";
+  img.alt = "Silhouette du buffie";
+  img.onerror = () => img.removeAttribute("src");
 }
 
-function setupBuffieClues(){
-    $("#buffieIconClueBtn")?.addEventListener("click", () => {
-        if(state.attempts >= BUFFIE_CLUES.ICON)
-            toggleBuffieIconClue();
-    });
+function setupBuffieClues() {
+  $("#buffieIconClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= BUFFIE_CLUES.ICON) toggleBuffieIconClue();
+  });
 
-    $("#buffieImageClueBtn")?.addEventListener("click", () => {
-        if(state.attempts >= BUFFIE_CLUES.IMAGE)
-            toggleBuffieImage();
-    });
+  $("#buffieImageClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= BUFFIE_CLUES.IMAGE) toggleBuffieImage();
+  });
 }
 
-function updateBuffieClues(){
-    updateBuffieCard("Icon", BUFFIE_CLUES.ICON);
-    updateBuffieCard("Image", BUFFIE_CLUES.IMAGE);
+function updateBuffieClues() {
+  updateBuffieCard("Icon", BUFFIE_CLUES.ICON);
+  updateBuffieCard("Image", BUFFIE_CLUES.IMAGE);
 
-    const icon = $("#buffieIconClueImage");
-    if(icon){
-        icon.src = state.target.ability?.description || "";
-        icon.alt = "Icône du buffie";
-        icon.onerror = () => icon.removeAttribute("src");
-    }
+  const icon = $("#buffieIconClueImage");
+  if (icon) {
+    icon.src = state.target.ability?.description || "";
+    icon.alt = "Icône du buffie";
+    icon.onerror = () => icon.removeAttribute("src");
+  }
 }
 
-function updateBuffieCard(type, unlockAt){
-    const unlocked = state.attempts >= unlockAt;
-    const id = `buffie${type}Clue`;
+function updateBuffieCard(type, unlockAt) {
+  const unlocked = state.attempts >= unlockAt;
+  const id = `buffie${type}Clue`;
 
-    $("#"+id+"Btn")?.classList.toggle("unlocked", unlocked);
-    $("#"+id+"Icon").src = unlocked
-        ? `../assets/design/icon-clue_${type === "Icon" ? "desc" : "buffie"}.png`
-        : `../assets/design/icon-clue_${type === "Icon" ? "desc" : "buffie"}_lock.png`;
-    $("#"+id+"Tries").textContent = Math.max(0, unlockAt - state.attempts);
-    $("#"+id+"Status").textContent = unlocked ? "" : `in ${unlockAt - state.attempts} tries`;
+  $("#" + id + "Btn")?.classList.toggle("unlocked", unlocked);
+  $("#" + id + "Icon").src = unlocked
+    ? `../assets/design/icon-clue_${type === "Icon" ? "desc" : "buffie"}.png`
+    : `../assets/design/icon-clue_${type === "Icon" ? "desc" : "buffie"}_lock.png`;
+  $("#" + id + "Tries").textContent = Math.max(0, unlockAt - state.attempts);
+  $("#" + id + "Status").textContent = unlocked
+    ? ""
+    : `in ${unlockAt - state.attempts} tries`;
 }
 
-function toggleBuffieIconClue(){
-    const card = $("#buffieIconClueBtn");
-    const bubble = $("#buffieIconClueBubble");
-    const isOpen = card.classList.toggle("showing-clue");
+function toggleBuffieIconClue() {
+  const card = $("#buffieIconClueBtn");
+  const bubble = $("#buffieIconClueBubble");
+  const isOpen = card.classList.toggle("showing-clue");
 
-    bubble.setAttribute("aria-hidden", String(!isOpen));
+  bubble.setAttribute("aria-hidden", String(!isOpen));
 }
 
-function revealBuffie(){
-    $("#buffieImage")?.classList.add("is-revealed");
+function revealBuffie() {
+  $("#buffieImage")?.classList.add("is-revealed");
 }
 
-function toggleBuffieImage(){
-    $("#buffieImage")?.classList.toggle("is-revealed");
+function toggleBuffieImage() {
+  $("#buffieImage")?.classList.toggle("is-revealed");
 }
 
 // ===============================
 // HELPERS
 // ===============================
 
-function $(selector){
+function $(selector) {
+  if (selector.startsWith("#"))
+    return document.getElementById(selector.slice(1));
 
-    if(selector.startsWith("#"))
-        return document.getElementById(
-            selector.slice(1)
-        );
-
-    return document.querySelector(selector);
-
+  return document.querySelector(selector);
 }
 
-function showError(msg,time=3000){
+function showError(msg, time = 3000) {
+  const banner = $("#errorBanner");
 
-    const banner=$("#errorBanner");
+  if (!banner) return;
 
-    if(!banner) return;
+  $("#errorMsg").textContent = msg;
 
-    $("#errorMsg").textContent=msg;
+  banner.classList.add("visible");
 
-    banner.classList.add("visible");
-
-    if(time<9000){
-
-        setTimeout(()=>{
-
-            banner.classList.remove("visible");
-
-        },time);
-
-    }
-
+  if (time < 9000) {
+    setTimeout(() => {
+      banner.classList.remove("visible");
+    }, time);
+  }
 }
 
 // ===============================
@@ -1596,54 +1305,61 @@ function showError(msg,time=3000){
 const EMOJI_CLUE_COUNT = 4;
 
 function splitEmojiClues(value) {
-    if (typeof Intl !== "undefined" && Intl.Segmenter) {
-        return Array.from(
-            new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(value || ""),
-            part => part.segment
-        );
-    }
+  if (typeof Intl !== "undefined" && Intl.Segmenter) {
+    return Array.from(
+      new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(
+        value || "",
+      ),
+      (part) => part.segment,
+    );
+  }
 
-    return Array.from(value || "");
+  return Array.from(value || "");
 }
 
 function initEmojis() {
-    const clues = splitEmojiClues(state.target.emojis).slice(0, EMOJI_CLUE_COUNT);
-    state.target.emojiClues = clues;
+  const clues = splitEmojiClues(state.target.emojis).slice(0, EMOJI_CLUE_COUNT);
+  state.target.emojiClues = clues;
 
-    if (clues.length !== EMOJI_CLUE_COUNT) {
-        throw new Error("This brawler needs exactly 4 emoji clues.");
-    }
+  if (clues.length !== EMOJI_CLUE_COUNT) {
+    throw new Error("This brawler needs exactly 4 emoji clues.");
+  }
 
-    updateEmojiClues();
+  updateEmojiClues();
 }
 
 function emojiGuess(brawler) {
-    const correct = brawler.id === state.target.id;
+  const correct = brawler.id === state.target.id;
 
-    renderSimpleGuess(brawler, correct);
-    updateEmojiClues();
+  renderSimpleGuess(brawler, correct);
+  updateEmojiClues();
 
-    if (correct) {
-        finishGame();
-        setTimeout(showSimpleWin, 700);
-    }
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 function updateEmojiClues() {
-    const clues = state.target.emojiClues || [];
+  const clues = state.target.emojiClues || [];
 
-    document.querySelectorAll(".emoji-clue").forEach((clue, index) => {
-        const unlocked = index <= state.attempts;
-        const image = clue.querySelector("img");
-        const value = clue.querySelector(".emoji-clue-value");
+  document.querySelectorAll(".emoji-clue").forEach((clue, index) => {
+    const unlocked = index <= state.attempts;
+    const image = clue.querySelector("img");
+    const value = clue.querySelector(".emoji-clue-value");
 
-        clue.classList.toggle("is-unlocked", unlocked);
-        clue.setAttribute("aria-label", unlocked ? `Indice ${index + 1}: ${clues[index]}` : `Indice ${index + 1} verrouillé`);
-        image.src = unlocked
-            ? "../assets/design/icon-clue_bubble.png"
-            : "../assets/design/icon-clue_bubble_2.png";
-        value.textContent = unlocked ? clues[index] : "";
-    });
+    clue.classList.toggle("is-unlocked", unlocked);
+    clue.setAttribute(
+      "aria-label",
+      unlocked
+        ? `Clue ${index + 1}: ${clues[index]}`
+        : `Clue ${index + 1} locked`,
+    );
+    image.src = unlocked
+      ? "../assets/design/icon-clue_bubble.png"
+      : "../assets/design/icon-clue_bubble_2.png";
+    value.textContent = unlocked ? clues[index] : "";
+  });
 }
 
 // ===============================
@@ -1651,30 +1367,30 @@ function updateEmojiClues() {
 // ===============================
 
 function initSpray() {
-    const image = $("#sprayImage");
+  const image = $("#sprayImage");
 
-    if (!state.target.spray) {
-        throw new Error("This brawler needs a spray image.");
-    }
+  if (!state.target.spray) {
+    throw new Error("This brawler needs a spray image.");
+  }
 
-    image.src = state.target.spray;
-    image.alt = `Spray de ${state.target.name}`;
-    image.onerror = () => image.removeAttribute("src");
+  image.src = state.target.spray;
+  image.alt = `Spray de ${state.target.name}`;
+  image.onerror = () => image.removeAttribute("src");
 
-    setupTitleClues();
-    updateTitleClues();
+  setupTitleClues();
+  updateTitleClues();
 }
 
 function sprayGuess(brawler) {
-    const correct = brawler.id === state.target.id;
+  const correct = brawler.id === state.target.id;
 
-    renderSimpleGuess(brawler, correct);
-    updateTitleClues();
+  renderSimpleGuess(brawler, correct);
+  updateTitleClues();
 
-    if (correct) {
-        finishGame();
-        setTimeout(showSimpleWin, 700);
-    }
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 // ===============================
@@ -1684,131 +1400,146 @@ function sprayGuess(brawler) {
 const DESCRIPTION_WORD_INTERVALS = [2, 4, 8, 16, 0];
 
 const TITLE_CLUES = {
-    PRESTIGE_TITLE: 4,
-    ICON: 6
+  PRESTIGE_TITLE: 4,
+  ICON: 6,
 };
 
 function initTitle() {
-    updateBrawlerTitle();
-    setupTitleClues();
-    updateTitleClues();
+  updateBrawlerTitle();
+  setupTitleClues();
+  updateTitleClues();
 }
 
 function titleGuess(brawler) {
-    const correct = brawler.id === state.target.id;
+  const correct = brawler.id === state.target.id;
 
-    renderSimpleGuess(brawler, correct);
-    updateBrawlerTitle(correct);
-    updateTitleClues();
+  renderSimpleGuess(brawler, correct);
+  updateBrawlerTitle(correct);
+  updateTitleClues();
 
-    if (correct) {
-        finishGame();
-        setTimeout(showSimpleWin, 700);
-    }
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 function updateBrawlerTitle(reveal = false) {
-    const title = $("#brawlerTitle");
-    if (!title) return;
+  const title = $("#brawlerTitle");
+  if (!title) return;
 
-    title.textContent = state.target.title || "Unknown";
+  title.textContent = state.target.title || "Unknown";
 }
 
 function setupTitleClues() {
-    $("#prestigeTitleClueBtn")?.addEventListener("click", () => {
-        if (state.attempts >= TITLE_CLUES.PRESTIGE_TITLE)
-            toggleTitlePopup("prestigeTitle");
-    });
+  $("#prestigeTitleClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= TITLE_CLUES.PRESTIGE_TITLE)
+      toggleTitlePopup("prestigeTitle");
+  });
 
-    $("#titleIconClueBtn")?.addEventListener("click", () => {
-        if (state.attempts >= TITLE_CLUES.ICON)
-            toggleTitlePopup("icon");
-    });
+  $("#titleIconClueBtn")?.addEventListener("click", () => {
+    if (state.attempts >= TITLE_CLUES.ICON) toggleTitlePopup("icon");
+  });
 }
 
 function updateTitleClues() {
-    updateTitleCard("prestigeTitle", TITLE_CLUES.PRESTIGE_TITLE);
-    updateTitleCard("titleIcon", TITLE_CLUES.ICON);
+  updateTitleCard("prestigeTitle", TITLE_CLUES.PRESTIGE_TITLE);
+  updateTitleCard("titleIcon", TITLE_CLUES.ICON);
 
-    $("#cluePopupTextPrestigeTitle").textContent =
-        state.target.prestige_title || "Unknown";
+  $("#cluePopupTextPrestigeTitle").textContent =
+    state.target.prestige_title || "Unknown";
 
-    const icon = $("#cluePopupTitleIcon");
-    if (icon) {
-        icon.src = state.target.profile_icon_path || "";
-        icon.alt = `Icône de profil de ${state.target.name}`;
-    }
+  const icon = $("#cluePopupTitleIcon");
+  if (icon) {
+    icon.src = state.target.profile_icon_path || "";
+    icon.alt = `Icône de profil de ${state.target.name}`;
+  }
 }
 
 function updateTitleCard(type, unlockAt) {
-    const unlocked = state.attempts >= unlockAt;
-    const iconType = type === "prestigeTitle" ? "title" : "desc";
+  const unlocked = state.attempts >= unlockAt;
+  const iconType = type === "prestigeTitle" ? "title" : "desc";
 
-    $("#" + type + "ClueBtn")?.classList.toggle("unlocked", unlocked);
-    $("#" + type + "ClueIcon").src = unlocked
-        ? `../assets/design/icon-clue_${iconType}.png`
-        : `../assets/design/icon-clue_${iconType}_lock.png`;
-    $("#" + type + "ClueTries").textContent = Math.max(0, unlockAt - state.attempts);
-    $("#" + type + "ClueStatus").textContent = state.attempts < unlockAt
-        ? `in ${unlockAt - state.attempts} tries`
-        : "";
+  $("#" + type + "ClueBtn")?.classList.toggle("unlocked", unlocked);
+  $("#" + type + "ClueIcon").src = unlocked
+    ? `../assets/design/icon-clue_${iconType}.png`
+    : `../assets/design/icon-clue_${iconType}_lock.png`;
+  $("#" + type + "ClueTries").textContent = Math.max(
+    0,
+    unlockAt - state.attempts,
+  );
+  $("#" + type + "ClueStatus").textContent =
+    state.attempts < unlockAt ? `in ${unlockAt - state.attempts} tries` : "";
 }
 
 function toggleTitlePopup(type) {
-    const card = $("#" + (type === "prestigeTitle" ? "prestigeTitle" : "titleIcon") + "ClueBtn");
-    const other = $("#" + (type === "prestigeTitle" ? "titleIcon" : "prestigeTitle") + "ClueBtn");
-    const bubble = $("#" + (type === "prestigeTitle" ? "prestigeTitle" : "titleIcon") + "ClueBubble");
-    const otherBubble = $("#" + (type === "prestigeTitle" ? "titleIcon" : "prestigeTitle") + "ClueBubble");
-    const isOpen = card.classList.contains("showing-clue");
+  const card = $(
+    "#" +
+      (type === "prestigeTitle" ? "prestigeTitle" : "titleIcon") +
+      "ClueBtn",
+  );
+  const other = $(
+    "#" +
+      (type === "prestigeTitle" ? "titleIcon" : "prestigeTitle") +
+      "ClueBtn",
+  );
+  const bubble = $(
+    "#" +
+      (type === "prestigeTitle" ? "prestigeTitle" : "titleIcon") +
+      "ClueBubble",
+  );
+  const otherBubble = $(
+    "#" +
+      (type === "prestigeTitle" ? "titleIcon" : "prestigeTitle") +
+      "ClueBubble",
+  );
+  const isOpen = card.classList.contains("showing-clue");
 
-    card.classList.toggle("showing-clue", !isOpen);
-    other.classList.remove("showing-clue");
-    bubble.setAttribute("aria-hidden", String(isOpen));
-    otherBubble.setAttribute("aria-hidden", "true");
-    state.clue.active = isOpen ? null : type;
+  card.classList.toggle("showing-clue", !isOpen);
+  other.classList.remove("showing-clue");
+  bubble.setAttribute("aria-hidden", String(isOpen));
+  otherBubble.setAttribute("aria-hidden", "true");
+  state.clue.active = isOpen ? null : type;
 }
 
 function initDescription() {
-    updateBrawlerDescription();
+  updateBrawlerDescription();
 }
 
 function descriptionGuess(brawler) {
-    const correct = brawler.id === state.target.id;
+  const correct = brawler.id === state.target.id;
 
-    renderSimpleGuess(brawler, correct);
-    updateBrawlerDescription(correct);
+  renderSimpleGuess(brawler, correct);
+  updateBrawlerDescription(correct);
 
-    if (correct) {
-        finishGame();
-        setTimeout(showSimpleWin, 700);
-    }
+  if (correct) {
+    finishGame();
+    setTimeout(showSimpleWin, 700);
+  }
 }
 
 function updateBrawlerDescription(reveal = false) {
-    const description = $("#brawlerDescription");
-    if (!description) return;
+  const description = $("#brawlerDescription");
+  if (!description) return;
 
-    const text = state.target.description || "Unknown";
+  const text = state.target.description || "Unknown";
 
-    if (reveal) {
-        description.textContent = text;
-        return;
-    }
+  if (reveal) {
+    description.textContent = text;
+    return;
+  }
 
-    const interval = DESCRIPTION_WORD_INTERVALS[
-        Math.min(state.attempts, DESCRIPTION_WORD_INTERVALS.length - 1)
+  const interval =
+    DESCRIPTION_WORD_INTERVALS[
+      Math.min(state.attempts, DESCRIPTION_WORD_INTERVALS.length - 1)
     ];
 
-    description.textContent = maskDescriptionWords(
-        text,
-        interval
-    );
+  description.textContent = maskDescriptionWords(text, interval);
 }
 
 function maskDescriptionWords(text, interval) {
-    const words = String(text).trim().split(/\s+/).filter(Boolean);
+  const words = String(text).trim().split(/\s+/).filter(Boolean);
 
-    return words.map((word, index) =>
-        (index + 1) % interval === 0 ? "_" : word
-    ).join(" ");
+  return words
+    .map((word, index) => ((index + 1) % interval === 0 ? "_" : word))
+    .join(" ");
 }
