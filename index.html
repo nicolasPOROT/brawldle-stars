@@ -1,56 +1,71 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brawldle</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/home.css" />
-</head>
-<body class="bg-stars">
-
-<main class="home-page">
-  <div class="home-content">
-    <div class="home-logo-wrap">
-      <img
-        src="assets/design/logo_brawldle-stars.png"
-        alt="Brawldle Stars"
-        onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block'"
-      />
-    </div>
-
-    <p class="home-tagline title">CAN YOU GUESS THE BRAWLER ?</p>
-
-    <div class="home-actions" aria-label="Actions principales">
-      <a href="pages/classic.html" class="play-cta" aria-label="Lancer une partie">
-        <img class="play-shell" src="assets/design/play-button.png" alt="" aria-hidden="true" />
-        <div class="play-progress" aria-hidden="true">
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
-          <img src="assets/design/progress-bar-segment-false.png" alt="" />
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brawldle</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/home.css" />
+  </head>
+  <body class="bg-stars">
+    <main class="home-page">
+      <div class="home-content">
+        <div class="home-logo-wrap">
+          <img
+            src="assets/design/logo_brawldle-stars.png"
+            alt="Brawldle Stars"
+            onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block'"
+          />
         </div>
-      </a>
 
-      <a href="pages/gamemode.html" class="mode-cta" aria-label="Choisir le mode de jeu">
-        <img class="mode-shell" src="assets/design/mode-button.png" alt="" aria-hidden="true" />
-        <span class="mode-reset text-reset">00h 00m</span>
-        <img class="mode-new" src="assets/design/new-flag.png" alt="Nouveau" />
-      </a>
-    </div>
-  </div>
+        <p class="home-tagline title">CAN YOU GUESS THE BRAWLER ?</p>
 
-</main>
+        <div class="home-actions" aria-label="Main actions">
+          <a
+            href="pages/classic.html"
+            class="play-cta"
+            aria-label="Start a game"
+          >
+            <img
+              class="play-shell"
+              src="assets/design/play-button.png"
+              alt=""
+              aria-hidden="true"
+            />
+            <div class="play-progress" aria-hidden="true">
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+              <img src="assets/design/progress-bar-segment-false.png" alt="" />
+            </div>
+          </a>
 
-<script src="js/utils.js"></script>
+          <a
+            href="pages/gamemode.html"
+            class="mode-cta"
+            aria-label="Choose a game mode"
+          >
+            <img
+              class="mode-shell"
+              src="assets/design/mode-button.png"
+              alt=""
+              aria-hidden="true"
+            />
+            <span class="mode-reset text-reset">00h 00m</span>
+            <img
+              class="mode-new"
+              src="assets/design/new-flag.png"
+              alt="Nouveau"
+            />
+          </a>
+        </div>
+      </div>
+    </main>
 
-<script>
-    Utils.updateResetLabels();
-</script>
-
-</body>
+    <script src="js/utils.js"></script>
+  </body>
 </html>

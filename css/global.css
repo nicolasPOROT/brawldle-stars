@@ -1,18 +1,21 @@
 @font-face {
-  font-family: 'Lilita One';
-  src: url('../fonts/LilitaOne-Regular.ttf') format('truetype');
+  font-family: "Lilita One";
+  src: url("../fonts/LilitaOne-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  --font-title:  'Lilita One', cursive;
-  --font-body:   'Nunito', sans-serif;
+  --font-title: "Lilita One", cursive;
+  --font-body: "Nunito", sans-serif;
 
   --title-color: #ffffff;
   --title-stroke: #000000;
   --reset-color: #7583a4;
+  --bg: #10182d;
+  --text: #ffffff;
+  --border: rgba(255, 255, 255, 0.2);
 }
 
 * {
@@ -21,7 +24,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -33,17 +37,24 @@ body {
 }
 
 .bg-stars {
-  background-image:
-    url('../assets/design/background.png');
+  background-image: url("../assets/design/background.png");
   background-position: center, center, center;
   background-repeat: no-repeat, no-repeat, no-repeat;
   background-size: cover, cover, cover;
   background-attachment: fixed, fixed, fixed;
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
 
 h1,
 .title {
@@ -54,7 +65,15 @@ h1,
   color: var(--title-color);
   line-height: 1.1;
   /* Text shadow for a 3px stroke effect. */
-  text-shadow:-3px 0 0 var(--title-stroke), 3px 0 0 var(--title-stroke), 0 -3px 0 var(--title-stroke), 0 3px 0 var(--title-stroke), -2px -2px 0 var(--title-stroke), 2px -2px 0 var(--title-stroke), -2px 2px 0 var(--title-stroke), 2px 2px 0 var(--title-stroke)
+  text-shadow:
+    -3px 0 0 var(--title-stroke),
+    3px 0 0 var(--title-stroke),
+    0 -3px 0 var(--title-stroke),
+    0 3px 0 var(--title-stroke),
+    -2px -2px 0 var(--title-stroke),
+    2px -2px 0 var(--title-stroke),
+    -2px 2px 0 var(--title-stroke),
+    2px 2px 0 var(--title-stroke);
 }
 
 h2,
@@ -64,7 +83,11 @@ h2,
   color: var(--title-color);
   line-height: 1.2;
   /* Text shadow for 1px stroke + drop shadow. */
-  text-shadow:-1px 0 0 var(--title-stroke), 1px 0 0 var(--title-stroke), 0 -1px 0 var(--title-stroke), 0px 2px 0 rgb(1 1 1)
+  text-shadow:
+    -1px 0 0 var(--title-stroke),
+    1px 0 0 var(--title-stroke),
+    0 -1px 0 var(--title-stroke),
+    0px 2px 0 rgb(1 1 1);
 }
 
 .description {
@@ -74,8 +97,7 @@ h2,
   line-height: 1.35;
 }
 
-.text-reset,
-.reset-text{
+.text-reset {
   font-family: var(--font-title);
   color: var(--reset-color);
 }

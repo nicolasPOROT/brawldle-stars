@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brawldle - Title</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+    <link rel="stylesheet" href="../css/gameplay.css" />
+  </head>
+  <body class="bg-stars">
+    <main class="classic-page">
+      <section class="classic-hero">
+        <a href="../index.html" class="classic-logo-link" title="Accueil">
+          <img
+            src="../assets/design/logo_brawldle-stars.png"
+            alt="Brawldle Stars"
+            class="classic-logo"
+          />
+        </a>
+        <h1 class="classic-title title">Guess the brawler title</h1>
+      </section>
+
+      <section class="description-display" aria-label="Brawler title">
+        <div class="title-frame">
+          <img
+            src="../assets/design/guess_interface.png"
+            alt=""
+            class="description-frame-bg"
+            aria-hidden="true"
+          />
+          <span
+            id="brawlerTitle"
+            class="brawler-description subtitle"
+            aria-live="polite"
+          ></span>
+        </div>
+      </section>
+
+      <section class="clues-row" aria-label="Available clues">
+        <button
+          class="clue-card is-locked"
+          id="prestigeTitleClueBtn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="clue-lock-badge"
+            ><img
+              src="../assets/design/icon-clue_lock.png"
+              alt="Cadenas"
+            /><span id="prestigeTitleClueTries">4</span></span
+          >
+          <img
+            class="clue-main-icon"
+            id="prestigeTitleClueIcon"
+            src="../assets/design/icon-clue_title_lock.png"
+            alt="Indice titre prestige"
+          />
+          <span
+            class="clue-bubble"
+            id="prestigeTitleClueBubble"
+            aria-hidden="true"
+            ><img
+              src="../assets/design/icon-clue_bubble.png"
+              alt=""
+              class="clue-bubble-bg" /><span class="clue-bubble-content"
+              ><p class="description" id="cluePopupTextPrestigeTitle"></p></span
+          ></span>
+          <span class="clue-name subtitle">Prestige title clue</span
+          ><span class="clue-status subtitle" id="prestigeTitleClueStatus"
+            >in 4 tries</span
+          >
+        </button>
+
+        <button
+          class="clue-card is-locked"
+          id="titleIconClueBtn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="clue-lock-badge"
+            ><img
+              src="../assets/design/icon-clue_lock.png"
+              alt="Cadenas"
+            /><span id="titleIconClueTries">6</span></span
+          >
+          <img
+            class="clue-main-icon"
+            id="titleIconClueIcon"
+            src="../assets/design/icon-clue_desc_lock.png"
+            alt="Indice icône"
+          />
+          <span class="clue-bubble" id="titleIconClueBubble" aria-hidden="true"
+            ><img
+              src="../assets/design/icon-clue_bubble.png"
+              alt=""
+              class="clue-bubble-bg" /><span class="clue-bubble-content"
+              ><img
+                id="cluePopupTitleIcon"
+                class="title-icon-clue-image"
+                alt="Icône de profil" /></span
+          ></span>
+          <span class="clue-name subtitle">Icon clue</span
+          ><span class="clue-status subtitle" id="titleIconClueStatus"
+            >in 6 tries</span
+          >
+        </button>
+      </section>
+
+      <section class="search-zone">
+        <div class="search-wrap">
+          <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="Guess the brawler"
+            autocomplete="off"
+          />
+          <button class="chat-btn" type="button" aria-label="Submit answer">
+            <img src="../assets/design/icon-chat.png" alt="Chat" />
+          </button>
+          <div class="dropdown" id="dropdown"></div>
+        </div>
+      </section>
+
+      <section class="results-zone">
+        <div class="results-list" id="resultsList">
+          <div class="empty-state"><p>Start by searching a brawler.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <section class="win-section" id="winSection" aria-label="Victory">
+      <div class="win-container">
+        <span class="win-brawler-name description" id="winBrawlerName"></span>
+        <div class="win-brawler-icon">
+          <img id="winBrawlerIcon" src="" alt="Brawler" />
+        </div>
+        <h1 class="win-title title">You Win!</h1>
+        <p class="win-score description" id="winScore">Score: 0</p>
+        <div class="home-actions" aria-label="Main actions">
+          <a href="skin.html" class="play-cta" aria-label="Play again">
+            <img
+              class="play-shell"
+              src="../assets/design/play-button.png"
+              alt=""
+              aria-hidden="true"
+            />
+            <div class="play-progress" aria-hidden="true">
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+              <img
+                src="../assets/design/progress-bar-segment-false.png"
+                alt=""
+              />
+            </div>
+          </a>
+          <a
+            href="gamemode.html"
+            class="mode-cta"
+            aria-label="Choose a game mode"
+          >
+            <img
+              class="mode-shell"
+              src="../assets/design/mode-button.png"
+              alt=""
+              aria-hidden="true"
+            />
+            <span class="mode-reset text-reset">00h 00m</span>
+            <img
+              class="mode-new"
+              src="../assets/design/new-flag.png"
+              alt="Nouveau"
+            />
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <script src="../js/gameplay.js"></script>
+    <script src="../js/utils.js"></script>
+  </body>
+</html>
