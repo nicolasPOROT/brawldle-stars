@@ -91,6 +91,11 @@ const state = {
   }
 };
 
+function finishGame() {
+    state.gameOver = true;
+    Utils.markModeCompleted(state.mode);
+}
+
 // ===============================
 // SUPABASE
 // ===============================
@@ -697,7 +702,7 @@ function classicGuess(brawler) {
     updateClassicClues();
 
     if (result.correct) {
-        state.gameOver = true;
+        finishGame();
         setTimeout(showClassicWin, 700);
     }
 
@@ -995,7 +1000,7 @@ function gadgetGuess(brawler) {
 
     if(correct){
 
-        state.gameOver=true;
+        finishGame();
         setTimeout(showSimpleWin,700);
 
     }
@@ -1047,7 +1052,7 @@ function starPowerGuess(brawler){
 
     if(correct){
 
-        state.gameOver=true;
+        finishGame();
         setTimeout(showSimpleWin,700);
 
     }
@@ -1099,7 +1104,7 @@ function hyperchargeGuess(brawler){
 
     if(correct){
 
-        state.gameOver=true;
+        finishGame();
         setTimeout(showSimpleWin,700);
 
     }
@@ -1315,7 +1320,7 @@ function skinGuess(brawler){
 
     if(correct){
 
-        state.gameOver=true;
+        finishGame();
         setTimeout(showSkinWin,700);
 
     }
@@ -1380,7 +1385,7 @@ function iconGuess(brawler){
     updateIconZoom();
 
     if(correct){
-        state.gameOver = true;
+        finishGame();
         setTimeout(showIconWin, 700);
     }
 }
@@ -1429,7 +1434,7 @@ function mysteryGuess(brawler){
     if(correct){
 
         revealMystery();
-        state.gameOver=true;
+        finishGame();
         setTimeout(showMysteryWin,700);
 
     }
@@ -1481,7 +1486,7 @@ function buffieGuess(brawler){
 
     if(correct){
         revealBuffie();
-        state.gameOver = true;
+        finishGame();
         setTimeout(showSimpleWin, 700);
     }
 }
@@ -1619,7 +1624,7 @@ function emojiGuess(brawler) {
     updateEmojiClues();
 
     if (correct) {
-        state.gameOver = true;
+        finishGame();
         setTimeout(showSimpleWin, 700);
     }
 }
@@ -1667,7 +1672,7 @@ function sprayGuess(brawler) {
     updateTitleClues();
 
     if (correct) {
-        state.gameOver = true;
+        finishGame();
         setTimeout(showSimpleWin, 700);
     }
 }
@@ -1697,7 +1702,7 @@ function titleGuess(brawler) {
     updateTitleClues();
 
     if (correct) {
-        state.gameOver = true;
+        finishGame();
         setTimeout(showSimpleWin, 700);
     }
 }
@@ -1774,7 +1779,7 @@ function descriptionGuess(brawler) {
     updateBrawlerDescription(correct);
 
     if (correct) {
-        state.gameOver = true;
+        finishGame();
         setTimeout(showSimpleWin, 700);
     }
 }
