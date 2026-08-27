@@ -819,16 +819,16 @@ function showClassicWin() {
 // ===============================
 
 const CLASSIC_CLUES = {
-    DESC: 4,
+    ICON: 4,
     HYPER: 6
 };
 
 function setupClassicClues() {
 
-    $("#descClueBtn")?.addEventListener("click", () => {
+    $("#iconClueBtn")?.addEventListener("click", () => {
 
-        if (state.attempts >= CLASSIC_CLUES.DESC)
-            toggleClassicPopup("desc");
+        if (state.attempts >= CLASSIC_CLUES.ICON)
+            toggleClassicPopup("icon");
 
     });
 
@@ -843,13 +843,13 @@ function setupClassicClues() {
 
 function updateClassicClues() {
 
-    const descUnlocked = state.attempts >= CLASSIC_CLUES.DESC;
+    const iconUnlocked = state.attempts >= CLASSIC_CLUES.ICON;
     const hyperUnlocked = state.attempts >= CLASSIC_CLUES.HYPER;
 
     updateCard(
-        "desc",
-        descUnlocked,
-        CLASSIC_CLUES.DESC - state.attempts
+        "icon",
+        iconUnlocked,
+        CLASSIC_CLUES.ICON - state.attempts
     );
 
     updateCard(
@@ -858,38 +858,38 @@ function updateClassicClues() {
         CLASSIC_CLUES.HYPER - state.attempts
     );
 
-    $("#cluePopupTextDesc").textContent =
-        state.target.description || "Unknown";
+    const icon = $("#cluePopupIcon");
+    if (icon) {
+        icon.src = state.target.profile_icon_path || "";
+        icon.alt = `Icône de profil de ${state.target.name}`;
+        icon.onerror = () => icon.removeAttribute("src");
+    }
 
     const img = $("#cluePopupHyperImage");
-    const txt = $("#cluePopupTextHyper");
 
     if (state.target.hypercharge) {
 
         img.src = state.target.hypercharge.image_path;
         img.alt = state.target.hypercharge.name;
         img.style.display = "";
-
-        txt.textContent = state.target.hypercharge.name;
-
     } else {
 
         img.style.display = "none";
-        txt.textContent = "Unknown";
-
     }
 
 }
 
 function updateCard(type, unlocked, remaining) {
 
+    const iconType = type === "icon" ? "desc" : "hypercharge";
+
     $("#"+type+"ClueBtn")
         .classList.toggle("unlocked", unlocked);
 
     $("#"+type+"ClueIcon").src =
         unlocked
-            ? `../assets/design/icon-clue_${type==="hyper"?"hypercharge":type}.png`
-            : `../assets/design/icon-clue_${type==="hyper"?"hypercharge":type}_lock.png`;
+            ? `../assets/design/icon-clue_${iconType}.png`
+            : `../assets/design/icon-clue_${iconType}_lock.png`;
 
     $("#"+type+"ClueTries").textContent =
         Math.max(0, remaining);
@@ -919,9 +919,9 @@ function toggleClassicPopup(type) {
 
 function openClassicPopup(type) {
 
-    const other = type === "desc"
+    const other = type === "icon"
         ? "hyper"
-        : "desc";
+        : "icon";
 
     $("#"+type+"ClueBtn")
         .classList.add("showing-clue");
@@ -941,7 +941,7 @@ function openClassicPopup(type) {
 
 function closeClassicPopup() {
 
-    ["desc","hyper"].forEach(t=>{
+    ["icon","hyper"].forEach(t=>{
 
         $("#"+t+"ClueBtn")
             .classList.remove("showing-clue");
